@@ -36,26 +36,35 @@
         <title>Welcome</title>
     </head>
     <body>
-        <h1>Welcome!</h1>
-        <div id="login-container">
-            <form action="" method="post" class="login-form">
-                <h2>Login to your account</h2>
-                <div class="input-group">
-                    <label for="empcode">Employee Code </label>
-                    <input type="text" id="empcode" name="empcode" placeholder="enter empcode" required />
-                </div>
-                <div class="input-group">
-                    <label for="password">Password </label>
-                    <input type="password" id="password" name="password" placeholder="enter password" required />
-                </div>
-                <div class="login-btn">
-                    <button type="submit" name="loginBtn">Login</button>
-                </div>
-                <div class="switch-link">
-                    <p>Don't have an account? <a href="pages/register.php" class="switch-btn">Register</a>
-                    </p>
-                </div>
-            </form>
-        </div>
+        <nav class="navbar">
+            <div class="logo">
+                <img src="images/Indian-Railways.jpg" alt="logo">
+            </div>
+        </nav>
+        
+        
+        <main class="main-content">
+            <h1>Welcome!</h1>
+            <div id="login-container">
+                <form action="" method="post" class="login-form">
+                    <h2>Login to your account</h2>
+                    <div class="input-group">
+                        <label for="empcode">Employee Code </label>
+                        <input type="text" id="empcode" name="empcode" placeholder="enter empcode" required />
+                    </div>
+                    <div class="input-group">
+                        <label for="password">Password </label>
+                        <input type="password" id="password" name="password" placeholder="enter password" required />
+                    </div>
+                    <div class="login-btn">
+                        <button type="submit" name="loginBtn">Login</button>
+                    </div>
+                    <div class="switch-link">
+                        <p>Don't have an account? <a href="pages/register.php" class="switch-btn">Register</a>
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </main>
     </body>
 </html>

@@ -4,18 +4,17 @@
     box-sizing: border-box;
 }
 
-html{
+html, body{
     min-height: 100vh;
     font-family: "Nunito", sans-serif;
 }
 
-body{
+.main-content{
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    min-height: 100vh;
-    
+    min-height: calc(100vh - 100px);
 }
 
 #login-container, #register-container, #complaint-container{
@@ -25,6 +24,8 @@ body{
     background-color: #8da9c4;
     margin: 20px;
     width:  40%;
+    display: flex;
+    flex-direction: column;
 }
 
 .login-form h2, .register-form h2{
@@ -69,7 +70,7 @@ body{
     height: 40px;
 }
 
-.login-btn, .register-btn{
+.login-btn, .register-btn, .submit-btn, .logout-btn{
     display: flex;
     justify-content: center;
     align-items: center;
@@ -77,9 +78,20 @@ body{
     
 }
 
-.login-btn button, .register-btn button{
+.login-btn button, .register-btn button, .submit-btn button{
     padding: 10px 40px;
     background-color: #eef4ed;
+    border: none;
+    border-radius: 5px; 
+    cursor: pointer;
+    margin: 10px;
+    width: 95%;
+    display: flex;
+    justify-content: center;
+}
+.logout-btn button{
+    padding: 40px;
+    background-color: #f8d7da;
     border: none;
     border-radius: 5px; 
     cursor: pointer;
@@ -111,12 +123,33 @@ body{
     padding: 0 20px 0 20px;
 }
 
-.complaint-welcome{
-    display: flex;
-    flex-direction: vertical;
+.welcome-text{
+    padding: 5px;
+    text-align: center;
     align-items: center;
+    justify-content: space-between;
 }
 
-.welcome-text span{
-    padding: 5px;
+.navbar{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 10px 20px;
+    background-color: #8da9c4;
+    margin: 0;
+    height: 100px;
+}
+
+.logo{
+    display: flex;
+    align-items: flex-start;
+}
+
+.logo img{
+    /* width: 100px;
+    height: 100px; */
+    margin: 10px;
+    max-width: 80px;
+    height: auto;
 }
