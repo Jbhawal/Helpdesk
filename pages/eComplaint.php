@@ -30,16 +30,14 @@
             </div>
             <div class="welcome-text">
                 <span><p>Welcome!</span>
-                <span><?php echo $empname; ?></span>
-                <span><?php echo $desg; ?></span>
-                <span><?php echo $sec; ?></span>
+                <span><?php echo $empname; ?>,</span>
+                <span><?php echo $desg; ?>,</span>
+                <span><?php echo $sec; ?>,</span>
                 <span><?php echo $dept; ?></span></p>
             </div>
         </nav>
 
-        <!-- Sidebar + Main content wrapper -->
         <div class="wrapper">
-            <!-- Sidebar -->
             <aside class="sidebar" id="sidebar">
                 <ul>
                     <li><a href="#">Dashboard</a></li>
@@ -66,7 +64,7 @@
                         </div>
                         <div class="input-group">
                             <label for="file">Upload File:</label>
-                            <input type="file" id="file" name="uploadedFile" accept=".jpg, .jpeg, .png, .pdf" />
+                            <input type="file" id="file" name="uploadedFile" class="upload-file" accept=".jpg, .jpeg, .png, .pdf" />
                         </div>
                         <div class="input-group">
                             <label for="forward">Forward To</label>
