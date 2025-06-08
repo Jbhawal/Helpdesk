@@ -44,12 +44,14 @@
     <body>
         <nav class="navbar">
             <div class="logo">
-                <a href="../index.php">eComplaint</a>
+                <img src="../images/Indian-Railways.jpg" alt="logo">
+            </div>
+            <div class="site-name">
+                <h2>Helpdesk</h2>
             </div>
         </nav>
         <main class="main-content">
-        
-            <h1 style="margin-top: 5px;">Register</h1>
+            <h1 style="margin-top: 20px;">Register a new account</h1>
             <div id="register-container">
                 <form action="" method="post" class="register-form">
                     <div class="form-grid">
