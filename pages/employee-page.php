@@ -1,7 +1,7 @@
 <?php
     include_once '../include/config.php';
-    // include 'menu.php';
-    session_start();
+    include 'menu.php';
+    // session_start();
     $ecode = $_SESSION['empcode'];
     $listemp = $dbo->query("SELECT EMPNAME, DESG, SEC, DEPT FROM user WHERE empcode ='$ecode'");
     while ($rowemp = $listemp->fetch(PDO::FETCH_ASSOC))
@@ -33,12 +33,15 @@
                 if (move_uploaded_file($_FILES["uploadedFile"]["tmp_name"], $target_file)) 
                 {
                     $db_user = $dbo->query("INSERT INTO complaints ( ctype, sub, descr, empcode, compdate, uploadedFile, forwardto) VALUES ('$ctype', '$sub', '$descr', '$ecode', CURDATE(), '$target_file', '$fwd')");
+                    echo "<script>alert('Complaint has been registered.');</script>";
                 }
+
             }
         }
 
         else {
             $db_user = $dbo->query("INSERT INTO complaints ( ctype, sub, descr, empcode, compdate, forwardto) VALUES ('$ctype', '$sub', '$descr', '$ecode', CURDATE(), '$fwd')");
+            echo "<script>alert('Complaint has been registered.');</script>";
         }
     }
 ?>
