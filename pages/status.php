@@ -49,46 +49,8 @@
         <!-- navbar+sidebar(from menu.php)+ main content  --> 
         <div class="wrapper">
             <?php include 'menu.php';?>
-            <main class="main-content"> 
                 <h2>Employee Complaint Form</h2>
-                <div id="complaint-container">
-                    <form action="" method="post" enctype="multipart/form-data" class="complaint-form" id="complaint-form">
-                        <div class="input-group">
-                            <label for="ctype">Type</label>
-                            <select id="ctype" name="ctype" required>
-                                <option value="" disabled selected>select type</option>
-                                <option value="HW">Hardware</option>
-                                <option value="SW">Software</option>
-                                <option value="NW">Network</option>
-                            </select>
-                        </div>
-                        <div class="input-group">
-                            <label for="subject">Subject </label>
-                            <input type="text" id="subject" name="subject" placeholder="enter complaint subject" required />
-                        </div>
-                        <div class="input-group">
-                            <label for="descr">Description </label>
-                            <textarea id="descr" name="descr" rows="5" cols="40" placeholder="Describe your complaint here..."></textarea>
-                        </div>
-                        <div class="input-group">
-                            <label for="file">Upload File</label>
-                            <input type="file" id="uploadedFile" name="uploadedFile" class="upload-file" accept=".jpg, .jpeg, .png, .pdf" />
-                        </div>
-                        <div class="input-group">
-                            <label for="forward">Forward To</label>
-                            <select id="forward" name="forward" required>
-                                <option value="" disabled selected>select officer</option>
-                                <option value="o1">Officer1</option>
-                                <option value="o2">Officer2</option>
-                                <option value="o3">Officer3</option>
-                            </select>
-                        </div>
-                        <div class="submit-btn">
-                            <button type="submit" name="submitBtn" id="submitBtn">Submit</button>
-                        </div>
-                    </form>
-                </div>
-            </main>
+                
         </div>
 
     <!-- Overlay for small screen dark background -->

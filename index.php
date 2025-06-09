@@ -37,11 +37,10 @@
     <title>Welcome</title>
 </head>
 <body>
+    <!-- navbar -->
     <nav class="navbar">
         <div class="logo">
             <img src="images/Indian-Railways.jpg" alt="logo">
-        </div>
-        <div class="site-name">
             <h2>Helpdesk</h2>
         </div>
     </nav>

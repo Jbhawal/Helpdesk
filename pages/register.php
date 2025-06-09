@@ -41,14 +41,14 @@
         <title>Register</title>
     </head>
     <body>
+        <!-- navbar -->
         <nav class="navbar">
             <div class="logo">
                 <img src="../images/Indian-Railways.jpg" alt="logo">
-            </div>
-            <div class="site-name">
                 <h2>Helpdesk</h2>
             </div>
         </nav>
+        <!-- Main content (Registration form) -->
         <main class="main-content">
             <h1 style="margin-top: 20px;">Register a new account</h1>
             <div id="register-container">
@@ -125,7 +125,6 @@
                         <p>Already have an account? <a href="../index.php" class="switch-btn">Login</a></p>
                         </div>
                     </form>
-
             </div>
         </main>
     </body>

@@ -17,6 +17,7 @@ html, body{
     align-items: center;
     min-height: calc(100vh - 100px); /* to account for navbar height */
     min-width: none;
+    margin-top: 20px;
 }
 
 #login-container, #register-container, #complaint-container{
@@ -97,19 +98,7 @@ html, body{
     justify-content: center;
 }
 
-.logout-btn button{
-    padding: 40px;
-    background-color: #f8d7da;
-    border: none;
-    border-radius: 5px; 
-    cursor: pointer;
-    margin: 10px;
-    width: 95%;
-    display: flex;
-    justify-content: center;
-}
-
-.login-btn button:hover, .register-btn button:hover{
+.login-btn button:hover, .register-btn button:hover, .submit-btn button:hover{
     background-color: #7d8182;
     color: #fff;
 }
@@ -147,11 +136,12 @@ html, body{
     margin: 0;
     height: 100px;
     border-bottom: #000 solid 2px;
+    justify-content: space-between;
 }
 
 .logo{
     display: flex;
-    align-items: flex-start;
+    align-items: center;
 }
 
 .logo img{
@@ -174,15 +164,16 @@ html, body{
 .wrapper {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
 }
 
 .sidebar {
     width: 200px;
     background-color: #6a7f92;
     color: white;
-    padding: 20px;
-    height: calc(100vh - 100px);
+    /* padding: 20px; */
     position: relative;
+    min-height: 100vh;
 }
 
 .sidebar ul {
@@ -191,12 +182,30 @@ html, body{
 }
 
 .sidebar ul li {
-    margin: 15px 0;
+    margin: 1px 0;
+    border: #000 solid 2px;
+    padding: 10px;
 }
 
 .sidebar ul li a {
     color: white;
     text-decoration: none;
+    padding: 10px;
+}
+
+.sidebar ul li:hover {
+    background-color: #555f74;
+    color: white;
+    /* font-weight: bold; */
+    border-radius: 5px;
+}
+
+.sidebar-menu a.active {
+    color: rgb(209, 177, 61);
+    font-weight: bolder;
+    border-radius: 5px;
+    font-size: large;
+    text-shadow: black 1px 1px 2px;
 }
 
 .overlay {
