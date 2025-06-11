@@ -3,12 +3,13 @@
     session_start();
 
     $ecode = $_SESSION['empcode'];
-
+    $oquery = "SELECT EMPCODE, EMPNAME FROM user WHERE CATEGORY='O' ORDER BY EMPNAME";
     if(isset($_POST['submitBtn'])){
 		$ctype = $_POST["ctype"];
 		$sub = $_POST["subject"];
         $descr = $_POST["descr"];
 		$fwd = $_POST["forward"];
+        $oname = $dbo->query("SELECT EMPNAME FROM user WHERE empcode = '$fwd'")->fetchColumn();
 
         $target_dir = "../uploads/";
         $target_file = $target_dir.basename($_FILES["uploadedFile"]["name"]);
@@ -23,13 +24,13 @@
             }
             else {
                 if (move_uploaded_file($_FILES["uploadedFile"]["tmp_name"], $target_file)){
-                    $db_user = $dbo->query("INSERT INTO complaints ( ctype, sub, descr, empcode, compdate, uploadedFile, forwardto) VALUES ('$ctype', '$sub', '$descr', '$ecode', CURDATE(), '$target_file', '$fwd')");
+                    $db_user = $dbo->query("INSERT INTO complaints (ctype, sub, descr, empcode, compdate, uploadedFile, forwardto, offname) VALUES ('$ctype', '$sub', '$descr', '$ecode', CURDATE(), '$target_file', '$fwd', '$oname')");
                     echo "<script>alert('Complaint has been registered.');</script>";
                 }
             }
         }
         else {
-            $db_user = $dbo->query("INSERT INTO complaints (ctype, sub, descr, empcode, compdate, forwardto) VALUES ('$ctype', '$sub', '$descr', '$ecode', CURDATE(), '$fwd')");
+            $db_user = $dbo->query("INSERT INTO complaints (ctype, sub, descr, empcode, compdate, forwardto, offname) VALUES ('$ctype', '$sub', '$descr', '$ecode', CURDATE(), '$fwd', '$oname')");
             echo "<script>alert('Complaint has been registered.');</script>";
         }
     }
@@ -43,7 +44,7 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
-        <title>Welcome</title>
+        <title>Employee Page</title>
     </head>
     <body>           
         <!-- navbar+sidebar(from menu.php)+ main content  --> 
@@ -56,7 +57,7 @@
                         <div class="input-group">
                             <label for="ctype">Type</label>
                             <select id="ctype" name="ctype" required>
-                                <option value="" disabled selected>select type</option>
+                                <option value="" disabled selected>Select Type</option>
                                 <option value="HW">Hardware</option>
                                 <option value="SW">Software</option>
                                 <option value="NW">Network</option>
@@ -64,7 +65,7 @@
                         </div>
                         <div class="input-group">
                             <label for="subject">Subject </label>
-                            <input type="text" id="subject" name="subject" placeholder="enter complaint subject" required />
+                            <input type="text" id="subject" name="subject" placeholder="Enter Complaint Subject" required />
                         </div>
                         <div class="input-group">
                             <label for="descr">Description </label>
@@ -77,12 +78,17 @@
                         <div class="input-group">
                             <label for="forward">Forward To</label>
                             <select id="forward" name="forward" required>
-                                <option value="" disabled selected>select officer</option>
-                                <option value="o1">Officer1</option>
-                                <option value="o2">Officer2</option>
-                                <option value="o3">Officer3</option>
+                                <option value=''>Select Officer</option>
+                                <?php
+                                    $listoff = $dbo->query($oquery);
+                                    while ($rowoff = $listoff->fetch(PDO::FETCH_ASSOC)){	
+                                ?>
+                                <option value="<?php echo $rowoff['EMPCODE']?>"><?php echo $rowoff['EMPNAME']?></option>
+                                <?php
+                                    }
+                                ?>
                             </select>
-                        </div>
+                    </div>
                         <div class="submit-btn">
                             <button type="submit" name="submitBtn" id="submitBtn">Submit</button>
                         </div>
