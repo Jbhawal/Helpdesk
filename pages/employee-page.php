@@ -24,13 +24,13 @@
             }
             else {
                 if (move_uploaded_file($_FILES["uploadedFile"]["tmp_name"], $target_file)){
-                    $db_user = $dbo->query("INSERT INTO complaints (ctype, sub, descr, empcode, compdate, uploadedFile, forwardto, offname) VALUES ('$ctype', '$sub', '$descr', '$ecode', CURDATE(), '$target_file', '$fwd', '$oname')");
+                    $db_user = $dbo->query("INSERT INTO complaints (ctype, sub, descr, empcode, compdate, status, uploadedFile, forwardto, offname) VALUES ('$ctype', '$sub', '$descr', '$ecode', CURDATE(), 'Pending', '$target_file', '$fwd', '$oname')");
                     echo "<script>alert('Complaint has been registered.');</script>";
                 }
             }
         }
         else {
-            $db_user = $dbo->query("INSERT INTO complaints (ctype, sub, descr, empcode, compdate, forwardto, offname) VALUES ('$ctype', '$sub', '$descr', '$ecode', CURDATE(), '$fwd', '$oname')");
+            $db_user = $dbo->query("INSERT INTO complaints (ctype, sub, descr, empcode, compdate, status, forwardto, offname) VALUES ('$ctype', '$sub', '$descr', '$ecode', CURDATE(), 'Pending', '$fwd', '$oname')");
             echo "<script>alert('Complaint has been registered.');</script>";
         }
     }
@@ -48,54 +48,54 @@
     </head>
     <body>           
         <!-- navbar+sidebar(from menu.php)+ main content  --> 
-        <div class="wrapper">
-            <?php include 'menu.php';?>
-            <main class="main-content"> 
-                <h2>Employee Complaint Form</h2>
-                <div id="complaint-container">
-                    <form action="" method="post" enctype="multipart/form-data" class="complaint-form" id="complaint-form">
-                        <div class="input-group">
-                            <label for="ctype">Type</label>
-                            <select id="ctype" name="ctype" required>
-                                <option value="" disabled selected>Select Type</option>
-                                <option value="HW">Hardware</option>
-                                <option value="SW">Software</option>
-                                <option value="NW">Network</option>
-                            </select>
+                <?php include 'menu.php';?>
+                <main class="main-content"> 
+                    <h2>Employee Complaint Form</h2>
+                    <div id="complaint-container">
+                        <form action="" method="post" enctype="multipart/form-data" class="complaint-form" id="complaint-form">
+                            <div class="input-group">
+                                <label for="ctype">Type</label>
+                                <select id="ctype" name="ctype" required>
+                                    <option value="" disabled selected>Select Type</option>
+                                    <option value="HW">Hardware</option>
+                                    <option value="SW">Software</option>
+                                    <option value="NW">Network</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label for="subject">Subject </label>
+                                <input type="text" id="subject" name="subject" placeholder="Enter Complaint Subject" required />
+                            </div>
+                            <div class="input-group">
+                                <label for="descr">Description </label>
+                                <textarea id="descr" name="descr" rows="5" cols="40" placeholder="Describe your complaint here..."></textarea>
+                            </div>
+                            <div class="input-group">
+                                <label for="file">Upload File</label>
+                                <input type="file" id="uploadedFile" name="uploadedFile" class="upload-file" accept=".jpg, .jpeg, .png, .pdf" />
+                            </div>
+                            <div class="input-group">
+                                <label for="forward">Forward To</label>
+                                <select id="forward" name="forward" required>
+                                    <option value=''>Select Officer</option>
+                                    <?php
+                                        $listoff = $dbo->query($oquery);
+                                        while ($rowoff = $listoff->fetch(PDO::FETCH_ASSOC)){	
+                                    ?>
+                                    <option value="<?php echo $rowoff['EMPCODE']?>"><?php echo $rowoff['EMPNAME']?></option>
+                                    <?php
+                                        }
+                                    ?>
+                                </select>
                         </div>
-                        <div class="input-group">
-                            <label for="subject">Subject </label>
-                            <input type="text" id="subject" name="subject" placeholder="Enter Complaint Subject" required />
-                        </div>
-                        <div class="input-group">
-                            <label for="descr">Description </label>
-                            <textarea id="descr" name="descr" rows="5" cols="40" placeholder="Describe your complaint here..."></textarea>
-                        </div>
-                        <div class="input-group">
-                            <label for="file">Upload File</label>
-                            <input type="file" id="uploadedFile" name="uploadedFile" class="upload-file" accept=".jpg, .jpeg, .png, .pdf" />
-                        </div>
-                        <div class="input-group">
-                            <label for="forward">Forward To</label>
-                            <select id="forward" name="forward" required>
-                                <option value=''>Select Officer</option>
-                                <?php
-                                    $listoff = $dbo->query($oquery);
-                                    while ($rowoff = $listoff->fetch(PDO::FETCH_ASSOC)){	
-                                ?>
-                                <option value="<?php echo $rowoff['EMPCODE']?>"><?php echo $rowoff['EMPNAME']?></option>
-                                <?php
-                                    }
-                                ?>
-                            </select>
+                            <div class="submit-btn">
+                                <button type="submit" name="submitBtn" id="submitBtn">Submit</button>
+                            </div>
+                        </form>
                     </div>
-                        <div class="submit-btn">
-                            <button type="submit" name="submitBtn" id="submitBtn">Submit</button>
-                        </div>
-                    </form>
-                </div>
-            </main>
-        </div>
+                </main>
+            </div> <!--closes wrapper -->
+        </div> <!--closes page-container -->
 
     <!-- Overlay for small screen dark background -->
     <div class="overlay" id="overlay"></div>
