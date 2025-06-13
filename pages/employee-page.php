@@ -21,18 +21,19 @@
             if ($imageFileType != "pdf" && $imageFileType != "jpg" && $imageFileType != "jpeg" && $imageFileType != "png") {
                 echo "<script>alert('Sorry, only PDF, JPG, JPEG & PNG files are allowed.');</script>";
                 $uploadOk = 0;
-            }
-            else {
-                if (move_uploaded_file($_FILES["uploadedFile"]["tmp_name"], $target_file)){
-                    $db_user = $dbo->query("INSERT INTO complaints (ctype, sub, descr, empcode, compdate, status, uploadedFile, forwardto, offname) VALUES ('$ctype', '$sub', '$descr', '$ecode', CURDATE(), 'Pending', '$target_file', '$fwd', '$oname')");
+            } else {
+                if (move_uploaded_file($_FILES["uploadedFile"]["tmp_name"], $target_file)) {
+                    $stmt = $dbo->prepare("INSERT INTO complaints (ctype, sub, descr, empcode, compdate, status, uploadedFile, forwardto, offname) VALUES (?, ?, ?, ?, CURDATE(), 'Pending', ?, ?, ?)");
+                    $stmt->execute([$ctype, $sub, $descr, $ecode, $target_file, $fwd, $oname]);
                     echo "<script>alert('Complaint has been registered.');</script>";
                 }
             }
-        }
-        else {
-            $db_user = $dbo->query("INSERT INTO complaints (ctype, sub, descr, empcode, compdate, status, forwardto, offname) VALUES ('$ctype', '$sub', '$descr', '$ecode', CURDATE(), 'Pending', '$fwd', '$oname')");
+        } else {
+            $stmt = $dbo->prepare("INSERT INTO complaints (ctype, sub, descr, empcode, compdate, status, forwardto, offname) VALUES (?, ?, ?, ?, CURDATE(), 'Pending', ?, ?)");
+            $stmt->execute([$ctype, $sub, $descr, $ecode, $fwd, $oname]);
             echo "<script>alert('Complaint has been registered.');</script>";
         }
+
     }
 ?>
 

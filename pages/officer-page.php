@@ -9,6 +9,7 @@
     $descr = '';
     $uploadedFile = '';
     $status = '';
+    $offrem = '';
     if(isset($_POST['submitBtn'])){
         $oremarks = $_POST["oremarks"];
         $ccode = $_POST["cccode"];
@@ -22,14 +23,25 @@
 
     if(isset($_GET['e'])){	
 		$ccode	= $_GET['e'];
-		$list=$dbo->query("SELECT COMPID, CTYPE, SUB, DESCR, UPLOADEDFILE, STATUS FROM complaints WHERE compid = '$ccode'"); 
+		$list=$dbo->query("SELECT COMPID, CTYPE, SUB, DESCR, UPLOADEDFILE, STATUS, OFFREM FROM complaints WHERE compid = '$ccode'"); 
 		while ($row = $list->fetch(PDO::FETCH_ASSOC)){
-			$compid 	= $row['COMPID'];
-			$ctype	= $row['CTYPE'];
-			$sub	= $row['SUB'];
-			$descr	= $row['DESCR'];
-			$uploadedFile	= $row['UPLOADEDFILE'];
+			$compid  = $row['COMPID'];
+			$ctype = $row['CTYPE'];
+			$sub = $row['SUB'];
+			$descr = $row['DESCR'];
+			$uploadedFile = $row['UPLOADEDFILE'];
 			$status	= $row['STATUS'];
+			$offrem	= $row['OFFREM'];
+            echo $offrem;
+            if($status	=='Pending'){
+                $currstatus='P';
+                $cs='';
+                
+            }
+            else{
+                $currstatus='N';
+                $cs='disabled';
+            }
 		}
 	}
 ?>
@@ -50,7 +62,7 @@
         <!-- <div class="wrapper"> -->
             
             <main class="officer-main">
-                <h2>Officer Page</h2>
+                <!-- <h2>Officer Page</h2> -->
                 <h2>List of all complaints</h2>
                 <form action="" method="post" class="complaint-form">
                     <div class="clist-container">
@@ -76,6 +88,9 @@
                                         echo "<td><a href='officer-page.php?e={$row['compid']}'>View Details</a></td>";
                                         echo "</tr>";
                                     }
+                                    if ($results->rowCount() == 0) {
+                                        echo "<tr class='no-complaints'><td colspan='5'>No complaints found.</td></tr>";
+                                    }
                                 ?>
                             </tbody>
                         </table>
@@ -91,19 +106,26 @@
                         <p><strong>Status:</strong> <?php echo $status ?></p>
                         <div class="input-group">
                             <label for="oremarks">Remarks</label>
-                            <input type="text" id="oremarks" name="oremarks" placeholder="enter remarks" />
-                        </div>
-                        <div class="input-group">
-                            <label for="ostatus">Current Status</label>
-                            <select id="ostatus" name="ostatus" required>
-                                <option value="" disabled selected>select status</option>
-                                <option value="Rejected">Return to User</option>
-                                <option value="Forwarded to Admin">Forward to Admin</option>
-                            </select>
-                        </div>
-                        <div class="submit-btn">
-                            <button type="submit" name="submitBtn">Submit</button>
-                        </div>
+                            <?php if($currstatus=='P'){ ?>
+                                <input type="text" id="oremarks" name="oremarks" placeholder="enter remarks" required/>   
+                                <?php } 
+                                else{ ?>
+                                    <p><?php echo $offrem ?> </p>
+                                <?php }?>
+                            </div>
+                        <?php if($currstatus=='P'){ ?>
+                            <div class="input-group">
+                                <label for="ostatus">Current Status</label>
+                                <select id="ostatus" name="ostatus" required>
+                                    <option value="" disabled selected>select status</option>
+                                    <option value="Rejected">Return to User</option>
+                                    <option value="Forwarded to Admin">Forward to Admin</option>
+                                </select>
+                            </div>
+                            <div class="submit-btn">
+                                <button type="submit" name="submitBtn">Submit</button>
+                            </div>
+                        <?php }  ?>
 
                     </div>
                 </form>

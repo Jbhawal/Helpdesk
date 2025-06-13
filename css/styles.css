@@ -163,7 +163,8 @@ html, body{
 
 .wrapper {
     display: flex;
-    min-height: 100vh;
+    /* min-height: 100vh; */
+    min-height: calc(100vh - 100px);
     flex-direction: row;
 }
 
@@ -254,13 +255,14 @@ html, body{
     display: flex;
     flex-direction: column;
     flex: 1;
-    min-height: 100vh;
+    /* min-height: 100vh; */
     justify-content: flex-start;
     align-items: center;
-    /* min-height: calc(100vh - 100px);  */
+    min-height: calc(100vh - 100px); 
 }
 .officer-main h2{
-    padding-top: 10px;
+    /* padding: 20px 20px 10px 20px; */
+    margin: 20px auto 10px auto;
 }
 
 .clist-container{
@@ -329,4 +331,9 @@ html, body{
     display: flex;
     flex-direction: column;
     width: 90%;
+}
+
+.no-complaints td{
+    text-align: center;
+    
 }
