@@ -259,6 +259,7 @@ html, body{
     justify-content: flex-start;
     align-items: center;
     min-height: calc(100vh - 100px); 
+    min-width: 0;
 }
 .officer-main h2{
     /* padding: 20px 20px 10px 20px; */
@@ -336,4 +337,62 @@ html, body{
 .no-complaints td{
     text-align: center;
     
+}
+
+.cheading {
+  display: flex;
+  width: 100%;
+  border-bottom: #a7a7a7 solid 1px;
+  align-items: center;
+  padding: 0 20px; 
+  margin-bottom: 10px;
+}
+
+/* Dropdown Button */
+.dropbtn {
+  background-color: transparent;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-bottom: #000 solid 0.5px;
+  border-radius: 5px;
+  cursor: pointer; 
+}
+
+
+.cstatus-select {
+  margin: 10px 50px;
+  display: inline-block; 
+  position: relative; 
+  z-index: 1000; 
+}
+
+/* Dropdown Content (Hidden by Default) */
+.cstatus-select-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 9999; 
+  top: 100%; 
+  left: 0;   
+  border-radius: 5px; 
+  overflow: hidden; 
+}
+
+/* Links inside the dropdown */
+.cstatus-select-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.cstatus-select-content a:hover {
+  background-color: #ddd;
+}
+
+.cstatus-select:hover .cstatus-select-content {
+  display: block;
 }

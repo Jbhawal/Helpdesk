@@ -32,7 +32,6 @@
 			$uploadedFile = $row['UPLOADEDFILE'];
 			$status	= $row['STATUS'];
 			$offrem	= $row['OFFREM'];
-            echo $offrem;
             if($status	=='Pending'){
                 $currstatus='P';
                 $cs='';
@@ -63,7 +62,18 @@
             
             <main class="officer-main">
                 <!-- <h2>Officer Page</h2> -->
-                <h2>List of all complaints</h2>
+                 <div class="cheading">
+                     <h2>List of all complaints</h2>
+                     <div class="cstatus-select">
+                        <button class="dropbtn" >Show &#9660;</button>
+                        <div class="cstatus-select-content">
+                            <a href="#">All</a>
+                            <a href="#">Pending</a>
+                            <a href="#">Rejected</a>
+                            <a href="#">Forwarded to Admin</a>
+                        </div>
+                    </div>
+                </div>
                 <form action="" method="post" class="complaint-form">
                     <div class="clist-container">
                         <table class="clist-table">
