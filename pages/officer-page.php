@@ -10,6 +10,12 @@
     $uploadedFile = '';
     $status = '';
     $offrem = '';
+    
+    if (!isset($_SESSION['empcode'])) {
+        header("Location: ../index.php");
+        exit();
+    }
+
     if(isset($_POST['submitBtn'])){
         $oremarks = $_POST["oremarks"];
         $ccode = $_POST["cccode"];
@@ -21,28 +27,25 @@
                 </script>";
     }
 
-    if(isset($_GET['e'])){	
-		$ccode	= $_GET['e'];
-		$list=$dbo->query("SELECT COMPID, CTYPE, SUB, DESCR, UPLOADEDFILE, STATUS, OFFREM FROM complaints WHERE compid = '$ccode'"); 
-		while ($row = $list->fetch(PDO::FETCH_ASSOC)){
-			$compid  = $row['COMPID'];
-			$ctype = $row['CTYPE'];
-			$sub = $row['SUB'];
-			$descr = $row['DESCR'];
-			$uploadedFile = $row['UPLOADEDFILE'];
-			$status	= $row['STATUS'];
-			$offrem	= $row['OFFREM'];
-            if($status	=='Pending'){
+    if(isset($_GET['e'])){    
+        $ccode  = $_GET['e'];
+        $list=$dbo->query("SELECT COMPID, CTYPE, SUB, DESCR, UPLOADEDFILE, STATUS, OFFREM FROM complaints WHERE compid = '$ccode'"); 
+        while ($row = $list->fetch(PDO::FETCH_ASSOC)){
+            $compid  = $row['COMPID'];
+            $ctype = $row['CTYPE'];
+            $sub = $row['SUB'];
+            $descr = $row['DESCR'];
+            $uploadedFile = $row['UPLOADEDFILE'];
+            $status = $row['STATUS'];
+            $offrem = $row['OFFREM'];
+            if($status == 'Pending'){
                 $currstatus='P';
-                $cs='';
-                
             }
             else{
                 $currstatus='N';
-                $cs='disabled';
             }
-		}
-	}
+        }
+    }
 ?>
 
 <!DOCTYPE html>
@@ -55,22 +58,18 @@
         <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
         <title>Officer Page</title>
     </head>
-    <body>           
-        <!-- navbar+sidebar(from menu.php)+ main content  --> 
+    <body>          
         <?php include 'menu.php';?>
-        <!-- <div class="wrapper"> -->
-            
             <main class="officer-main">
-                <!-- <h2>Officer Page</h2> -->
-                 <div class="cheading">
-                     <h2>List of all complaints</h2>
-                     <div class="cstatus-select">
-                        <button class="dropbtn" >Show &#9660;</button>
+                <div class="cheading">
+                    <h2>List of all complaints</h2>
+                    <div class="cstatus-select">
+                        <button class="dropbtn" id="statusFilterButton">All ▾</button>
                         <div class="cstatus-select-content">
-                            <a href="#">All</a>
-                            <a href="#">Pending</a>
-                            <a href="#">Rejected</a>
-                            <a href="#">Forwarded to Admin</a>
+                            <a href="#" data-status="All">All</a>
+                            <a href="#" data-status="Pending">Pending</a>
+                            <a href="#" data-status="Rejected">Rejected</a>
+                            <a href="#" data-status="Forwarded to Admin">Forwarded to Admin</a>
                         </div>
                     </div>
                 </div>
@@ -89,40 +88,48 @@
                             <tbody>
                                 <?php
                                     $results = $dbo->query("SELECT compid, ctype, sub, status FROM complaints WHERE forwardto='$ecode'");
-                                    while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
-                                        echo "<tr>";
-                                        echo "<td>{$row['compid']}</td>";
-                                        echo "<td>{$row['ctype']}</td>";
-                                        echo "<td>{$row['sub']}</td>";
-                                        echo "<td>{$row['status']}</td>";
-                                        echo "<td><a href='officer-page.php?e={$row['compid']}'>View Details</a></td>";
-                                        echo "</tr>";
-                                    }
-                                    if ($results->rowCount() == 0) {
-                                        echo "<tr class='no-complaints'><td colspan='5'>No complaints found.</td></tr>";
-                                    }
+                                    if ($results->rowCount() > 0) {
+                                        while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
+                                            echo "<tr>";
+                                            echo "<td>" . htmlspecialchars($row['compid']) . "</td>";
+                                            echo "<td>" . htmlspecialchars($row['ctype']) . "</td>";
+                                            echo "<td>" . htmlspecialchars($row['sub']) . "</td>";
+                                            echo "<td class='complaint-status'>" . htmlspecialchars($row['status']) . "</td>";
+                                            echo "<td><a href='officer-page.php?e=" . htmlspecialchars($row['compid']) . "'>View Details</a></td>";
+                                            echo "</tr>";
+                                        }
+                                    } 
+                                    $displayNoComplaints = ($results->rowCount() == 0) ? '' : 'display:none;';
+                                    echo "<tr class='no-complaints' style='{$displayNoComplaints}'><td colspan='5'>No complaints found.</td></tr>";
                                 ?>
                             </tbody>
                         </table>
                     </div>
-                    <div class="cdetails" id="complaintDetails">
+                    <div class="cdetails" id="complaintDetails" style="display: <?php echo (isset($_GET['e']) ? 'block' : 'none'); ?>;">
                         <h2>Complaint Details</h2>
-                        <input type="hidden" id="cccode" name="cccode" value="<?php echo $ccode ?>" />
-                        <p><strong>Complaint ID:</strong><?php echo $ccode ?></p>
-                        <p><strong>Type:</strong> <?php echo $ctype ?></p>
-                        <p><strong>Subject:</strong> <?php echo $sub ?></p>
-                        <p><strong>Description:</strong> <?php echo $descr ?></p>
-                        <p><strong>File:</strong> <a href='<?php echo $uploadedFile ?>' target="_blank" rel="noopener noreferrer"><?php echo $uploadedFile ?></a></p>
-                        <p><strong>Status:</strong> <?php echo $status ?></p>
+                        <input type="hidden" id="cccode" name="cccode" value="<?php echo htmlspecialchars($compid); ?>" />
+                        <p><strong>Complaint ID:</strong> <?php echo htmlspecialchars($compid); ?></p>
+                        <p><strong>Type:</strong> <?php echo htmlspecialchars($ctype); ?></p>
+                        <p><strong>Subject:</strong> <?php echo htmlspecialchars($sub); ?></p>
+                        <p><strong>Description:</strong> <?php echo htmlspecialchars($descr); ?></p>
+                        <p><strong>File:</strong> 
+                            <?php if (!empty($uploadedFile)): ?>
+                                <a href='<?php echo htmlspecialchars($uploadedFile); ?>' target="_blank" rel="noopener noreferrer">View Attached File</a>
+                            <?php else: ?>
+                                No file uploaded.
+                            <?php endif; ?>
+                        </p>
+                        <p><strong>Status:</strong> <?php echo htmlspecialchars($status); ?></p>
                         <div class="input-group">
-                            <label for="oremarks">Remarks</label>
+                            <label for="oremarks">Officer Remarks: </label>
                             <?php if($currstatus=='P'){ ?>
-                                <input type="text" id="oremarks" name="oremarks" placeholder="enter remarks" required/>   
-                                <?php } 
-                                else{ ?>
-                                    <p><?php echo $offrem ?> </p>
-                                <?php }?>
-                            </div>
+                                <input type="text" id="oremarks" name="oremarks" placeholder="enter remarks" value="<?php echo htmlspecialchars($offrem); ?>"/>    
+                            <?php } else if($offrem=='') { ?>
+                                <p><?php echo 'No remarks'; ?> </p>
+                            <?php } else { ?>
+                                <p><?php echo htmlspecialchars($offrem); ?> </p>
+                            <?php }?>
+                        </div>
                         <?php if($currstatus=='P'){ ?>
                             <div class="input-group">
                                 <label for="ostatus">Current Status</label>
@@ -136,24 +143,108 @@
                                 <button type="submit" name="submitBtn">Submit</button>
                             </div>
                         <?php }  ?>
-
                     </div>
                 </form>
             </main>
-           
-       
-        </div>
-        </div>
-
-        <?php if(isset($_GET['e'])): ?>
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                document.getElementById("complaintDetails").style.display = "block";
-                document.getElementById("complaintDetails").scrollIntoView({ behavior: 'smooth' });
-            });
-        </script>
-        <?php endif; ?>
         <div id="overlay" class="overlay"></div>
         <script src="../js/script.js"></script>
+
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const statusFilterButton = document.getElementById('statusFilterButton');
+            const dropdownContent = document.querySelector('.cstatus-select-content');
+            const statusLinks = dropdownContent.querySelectorAll('a');
+            const complaintTableBody = document.querySelector('.clist-table tbody'); 
+            // Corrected: Get ALL table rows including the 'no-complaints' row
+            const allTableRows = complaintTableBody ? complaintTableBody.querySelectorAll('tr') : []; 
+            const arrowSymbol = ' ▾';
+
+            const complaintDetailsDiv = document.getElementById("complaintDetails");
+
+            function filterComplaintsTable(selectedStatus){
+                let visibleComplaintsCount = 0; // Counter for actual complaint rows that are visible
+
+                allTableRows.forEach(row => {
+                    if (row.classList.contains('no-complaints')) {
+                        row.style.display = 'none'; // Initially hide the 'no-complaints' row
+                        return; // Skip to the next row in the loop
+                    }
+
+                    const statusCell = row.querySelector('.complaint-status');
+                    if (statusCell) {
+                        const rowStatus = statusCell.textContent.trim();
+                        if (selectedStatus === 'All') {
+                            row.style.display = '';
+                            visibleComplaintsCount++;
+                        } else if (rowStatus === selectedStatus) {
+                            row.style.display = '';
+                            visibleComplaintsCount++;
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    }
+                });
+
+                const noComplaintsRow = complaintTableBody ? complaintTableBody.querySelector('.no-complaints') : null;
+                if (noComplaintsRow) {
+                    if (visibleComplaintsCount === 0) {
+                        noComplaintsRow.style.display = ''; // Show if no complaints are visible
+                    } else {
+                        noComplaintsRow.style.display = 'none'; // Hide if complaints are visible
+                    }
+                }
+            }
+
+            statusLinks.forEach(link => {
+                link.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const selectedDisplayText = this.textContent;
+                    const selectedStatusValue = this.dataset.status;
+
+                    statusFilterButton.textContent = selectedDisplayText + arrowSymbol;
+                    dropdownContent.style.display = 'none';
+
+                    if (complaintDetailsDiv) {
+                        complaintDetailsDiv.style.display = 'none';
+                    }
+
+                    filterComplaintsTable(selectedStatusValue);
+                });
+            });
+
+            statusFilterButton.addEventListener('click', function(event) {
+                event.stopPropagation();
+                if (dropdownContent.style.display === 'block') {
+                    dropdownContent.style.display = 'none';
+                } else {
+                    const buttonRect = statusFilterButton.getBoundingClientRect();
+                    dropdownContent.style.top = (buttonRect.height) + 'px';
+                    dropdownContent.style.left = '0px';
+                    dropdownContent.style.display = 'block';
+                }
+            });
+
+            document.addEventListener('click', function(event) {
+                if (!statusFilterButton.contains(event.target) && !dropdownContent.contains(event.target)) {
+                    dropdownContent.style.display = 'none';
+                }
+            });
+
+            filterComplaintsTable('All'); // Initial call to show all complaints and hide "no complaints found" if there are any
+            statusFilterButton.textContent = 'All' + arrowSymbol;
+
+            const initialDetailsDisplay = <?php echo isset($_GET['e']) ? 'true' : 'false'; ?>;
+            if (initialDetailsDisplay) {
+                if (complaintDetailsDiv) {
+                    complaintDetailsDiv.style.display = "block";
+                    complaintDetailsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            } else {
+                if (complaintDetailsDiv) {
+                    complaintDetailsDiv.style.display = 'none';
+                }
+            }
+        });
+        </script>
     </body>
 </html>

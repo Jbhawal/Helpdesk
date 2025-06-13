@@ -15,7 +15,7 @@ html, body{
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    min-height: calc(100vh - 100px); /* to account for navbar height */
+    min-height: calc(100vh - 120px); /* to account for navbar height */
     min-width: 0; /* to prevent overflow */
     margin-top: 20px;
 }
@@ -169,7 +169,7 @@ html, body{
 }
 
 .sidebar {
-    width: 200px;
+    min-width: 200px;
     background-color: #6a7f92;
     color: white;
     position: relative;
@@ -258,7 +258,7 @@ html, body{
     /* min-height: 100vh; */
     justify-content: flex-start;
     align-items: center;
-    min-height: calc(100vh - 100px); 
+    min-height: calc(100vh - 120px); 
     min-width: 0;
 }
 .officer-main h2{
@@ -351,14 +351,13 @@ html, body{
 /* Dropdown Button */
 .dropbtn {
   background-color: transparent;
-  padding: 10px 20px;
+  padding: 10px 30px;
   font-size: 16px;
   border: none;
   border-bottom: #000 solid 0.5px;
   border-radius: 5px;
   cursor: pointer; 
 }
-
 
 .cstatus-select {
   margin: 10px 50px;
