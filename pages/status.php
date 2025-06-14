@@ -1,51 +1,60 @@
 <?php
-    include_once '../include/config.php';
+    include_once '../include/config.php'; // Assuming config.php sets up $dbo PDO object
     session_start();
-    $ecode = $_SESSION['empcode'];
-    $ccode = '';
-    $compid  = '';
+
+    // Ensure the user is logged in
+    if (!isset($_SESSION['empcode'])) {
+        header("Location: ../index.php"); // Redirect to login page
+        exit();
+    }
+
+    $ecode = $_SESSION['empcode']; // Employee Code of the logged-in user
+
+    // Initialize variables for complaint details to avoid undefined variable errors
+    $compid = '';
     $ctype = '';
     $sub = '';
     $descr = '';
     $uploadedFile = '';
     $status = '';
     $offrem = '';
-    if(isset($_POST['submitBtn'])){
-        $oremarks = $_POST["oremarks"];
-        $ccode = $_POST["cccode"];
-        $ostatus = $_POST["ostatus"];
-        $db_user = $dbo->query("UPDATE complaints SET offrem='$oremarks', status='$ostatus' WHERE compid='$ccode'");
-        echo "<script>
-                    alert('Update successful.');
-                    window.location.href = 'officer-page.php';
-                </script>";
-    }
+    $admrem = '';
+    $currstatus = 'N'; // Default to 'N' (no special status action for employee)
 
-    if(isset($_GET['e'])){	
-		$ccode	= $_GET['e'];
-		$list=$dbo->query("SELECT COMPID, CTYPE, SUB, DESCR, UPLOADEDFILE, STATUS, OFFREM FROM complaints WHERE compid = '$ccode'"); 
-		while ($row = $list->fetch(PDO::FETCH_ASSOC)){
-			$compid  = $row['COMPID'];
-			$ctype = $row['CTYPE'];
-			$sub = $row['SUB'];
-			$descr = $row['DESCR'];
-			$uploadedFile = $row['UPLOADEDFILE'];
-			$status	= $row['STATUS'];
-			$offrem	= $row['OFFREM'];
-            if($status == 'Pending'){
-                $currstatus='P';
+    // Get the current filter from the URL if set, default to 'All'
+    $initialFilter = isset($_GET['filter']) ? htmlspecialchars($_GET['filter']) : 'All';
+
+    // Handle displaying complaint details if 'e' parameter is set
+    if (isset($_GET['e'])) {
+        $ccode = $_GET['e'];
+        // Fetch complaint details for the *specific employee* and complaint ID
+        // Note: No SQL injection prevention as requested.
+        $list = $dbo->query("SELECT COMPID, CTYPE, SUB, DESCR, UPLOADEDFILE, STATUS, OFFREM, ADMREM FROM complaints WHERE compid = '$ccode' AND empcode = '$ecode'");
+        $row = $list->fetch(PDO::FETCH_ASSOC);
+
+        if ($row) { // If a complaint is found for this employee
+            $compid = $row['COMPID'];
+            $ctype = $row['CTYPE'];
+            $sub = $row['SUB'];
+            $descr = $row['DESCR'];
+            $uploadedFile = $row['UPLOADEDFILE'];
+            $status = $row['STATUS'];
+            $offrem = $row['OFFREM'];
+            $admrem = $row['ADMREM'];
+
+            // Employee doesn't "action" complaints, so currstatus doesn't strictly apply here
+            // but keeping the variable as 'P' for "Pending" can be useful for display logic.
+            if ($status == 'Pending') {
+                $currstatus = 'P'; // Complaint is still pending (for employee's view)
+            } else {
+                $currstatus = 'N'; // Complaint is not pending (resolved, rejected, etc.)
             }
-            elseif($status == 'Rejected'){
-                $currstatus='R';
-            }
-            elseif($status == 'Forwarded to Admin'){
-                $currstatus='F';
-            }
-            else{
-                $currstatus='A';
-            }
-		}
-	}
+        } else {
+            // If 'e' is set but no matching complaint found for this employee, redirect to list
+            header("Location: view-status.php?filter={$initialFilter}");
+            exit();
+        }
+    }
 ?>
 
 <!DOCTYPE html>
@@ -56,167 +65,103 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
-        <title>Officer Page</title>
+        <title>My Complaint Status</title>
     </head>
-    <body>           
-        <!-- navbar+sidebar(from menu.php)+ main content  --> 
-        <?php include 'menu.php';?>
-        <!-- <div class="wrapper"> -->
-            
-            <main class="officer-main">
-                <!-- <h2>Officer Page</h2> -->
-                 <div class="cheading">
-                     <h2>List of all complaints</h2>
-                     <div class="cstatus-select">
-                        <button class="dropbtn" >Show &#9660;</button>
-                        <div class="cstatus-select-content">
-                            <a href="#">All</a>
-                            <a href="#">Pending</a>
-                            <a href="#">Rejected</a>
-                            <a href="#">Forwarded to Admin</a>
-                        </div>
+    <body data-is-detail-view-active="<?php echo isset($_GET['e']) ? 'true' : 'false'; ?>">
+        <?php include 'menu.php'; ?>
+        <main class="officer-main">
+            <div class="cheading">
+                <h2>My Complaints</h2>
+                <div class="cstatus-select">
+                    <button class="dropbtn" id="statusFilterButton">All ▾</button>
+                    <div class="cstatus-select-content">
+                        <a href="#" data-status="All">All</a>
+                        <a href="#" data-status="Pending">Pending</a>
+                        <a href="#" data-status="Rejected">Rejected</a>
+                        <a href="#" data-status="Forwarded to Admin">Forwarded to Admin</a>
+                        <a href="#" data-status="Resolved">Resolved</a>
                     </div>
                 </div>
-                <form action="" method="post" class="complaint-form">
-                    <div class="clist-container">
-                        <table class="clist-table">
-                            <thead>
-                                <tr>
-                                    <th>Complaint ID</th>
-                                    <th>Type</th>
-                                    <th>Subject</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php if($currstatus=='P'){ 
-                                    $results = $dbo->query("SELECT compid, ctype, sub, status FROM complaints WHERE forwardto='$ecode' AND status='Pending'");
-                                    while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
-                                        echo "<tr>";
-                                        echo "<td>{$row['compid']}</td>";
-                                        echo "<td>{$row['ctype']}</td>";
-                                        echo "<td>{$row['sub']}</td>";
-                                        echo "<td>{$row['status']}</td>";
-                                        echo "<td><a href='officer-page.php?e={$row['compid']}'>View Details</a></td>";
-                                        echo "</tr>";
-                                    }
-                                    if ($results->rowCount() == 0) {
-                                        echo "<tr class='no-complaints'><td colspan='5'>No complaints found.</td></tr>";
-                                    }
-                                } elseif($currstatus=='R'){
-                                    $results = $dbo->query("SELECT compid, ctype, sub, status FROM complaints WHERE forwardto='$ecode' AND status='Rejected'");
-                                    while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
-                                        echo "<tr>";
-                                        echo "<td>{$row['compid']}</td>";
-                                        echo "<td>{$row['ctype']}</td>";
-                                        echo "<td>{$row['sub']}</td>";
-                                        echo "<td>{$row['status']}</td>";
-                                        echo "<td><a href='officer-page.php?e={$row['compid']}'>View Details</a></td>";
-                                        echo "</tr>";
-                                    }
-                                    if ($results->rowCount() == 0) {
-                                        echo "<tr class='no-complaints'><td colspan='5'>No complaints found.</td></tr>";
-                                    }
-                                } elseif($currstatus=='F'){
-                                    $results = $dbo->query("SELECT compid, ctype, sub, status FROM complaints WHERE forwardto='$ecode' AND status='Forwarded to Admin'");
-                                    while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
-                                        echo "<tr>";
-                                        echo "<td>{$row['compid']}</td>";
-                                        echo "<td>{$row['ctype']}</td>";
-                                        echo "<td>{$row['sub']}</td>";
-                                        echo "<td>{$row['status']}</td>";
-                                        echo "<td><a href='officer-page.php?e={$row['compid']}'>View Details</a></td>";
-                                        echo "</tr>";
-                                    }
-                                    if ($results->rowCount() == 0) {
-                                        echo "<tr class='no-complaints'><td colspan='5'>No complaints found.</td></tr>";
-                                    }
-                                } else{
-                                    $results = $dbo->query("SELECT compid, ctype, sub, status FROM complaints WHERE forwardto='$ecode' AND status='Accepted'");
-                                    while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
-                                        echo "<tr>";
-                                        echo "<td>{$row['compid']}</td>";
-                                        echo "<td>{$row['ctype']}</td>";
-                                        echo "<td>{$row['sub']}</td>";
-                                        echo "<td>{$row['status']}</td>";
-                                        echo "<td><a href='officer-page.php?e={$row['compid']}'>View Details</a></td>";
-                                        echo "</tr>";
-                                    }
-                                    if ($results->rowCount() == 0) {
-                                        echo "<tr class='no-complaints'><td colspan='5'>No complaints found.</td></tr>";
-                                    }
-                                }?>
-                            </div>
+            </div>
+            <form action="" method="post" class="complaint-form">
+                <input type="hidden" id="currentFilter" name="currentFilter" value="<?php echo $initialFilter; ?>">
 
+                <div class="clist-container">
+                    <table class="clist-table">
+                        <thead>
+                            <tr>
+                                <th>Complaint ID</th>
+                                <th>Type</th>
+                                <th>Subject</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            // Construct the WHERE clause based on the initialFilter and employee code
+                            $whereClause = "WHERE empcode = '$ecode'"; // Always filter by employee code
+                            $noComplaintsMessage = "No complaints found.";
 
+                            if ($initialFilter !== 'All') {
+                                $whereClause .= " AND status = '$initialFilter'";
+                                $noComplaintsMessage = "No complaints found with status '{$initialFilter}'.";
+                            }
 
-                                <?php
-                                    $results = $dbo->query("SELECT compid, ctype, sub, status FROM complaints WHERE forwardto='$ecode'");
-                                    while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
-                                        echo "<tr>";
-                                        echo "<td>{$row['compid']}</td>";
-                                        echo "<td>{$row['ctype']}</td>";
-                                        echo "<td>{$row['sub']}</td>";
-                                        echo "<td>{$row['status']}</td>";
-                                        echo "<td><a href='officer-page.php?e={$row['compid']}'>View Details</a></td>";
-                                        echo "</tr>";
-                                    }
-                                    if ($results->rowCount() == 0) {
-                                        echo "<tr class='no-complaints'><td colspan='5'>No complaints found.</td></tr>";
-                                    }
-                                ?>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="cdetails" id="complaintDetails">
-                        <h2>Complaint Details</h2>
-                        <input type="hidden" id="cccode" name="cccode" value="<?php echo $ccode ?>" />
-                        <p><strong>Complaint ID:</strong><?php echo $ccode ?></p>
-                        <p><strong>Type:</strong> <?php echo $ctype ?></p>
-                        <p><strong>Subject:</strong> <?php echo $sub ?></p>
-                        <p><strong>Description:</strong> <?php echo $descr ?></p>
-                        <p><strong>File:</strong> <a href='<?php echo $uploadedFile ?>' target="_blank" rel="noopener noreferrer"><?php echo $uploadedFile ?></a></p>
-                        <p><strong>Status:</strong> <?php echo $status ?></p>
-                        <div class="input-group">
-                            <label for="oremarks">Remarks</label>
-                            <?php if($currstatus=='P'){ ?>
-                                <input type="text" id="oremarks" name="oremarks" placeholder="enter remarks" required/>   
-                                <?php } 
-                                else{ ?>
-                                    <p><?php echo $offrem ?> </p>
-                                <?php }?>
-                            </div>
-                        <?php if($currstatus=='P'){ ?>
-                            <div class="input-group">
-                                <label for="ostatus">Current Status</label>
-                                <select id="ostatus" name="ostatus" required>
-                                    <option value="" disabled selected>select status</option>
-                                    <option value="Rejected">Return to User</option>
-                                    <option value="Forwarded to Admin">Forward to Admin</option>
-                                </select>
-                            </div>
-                            <div class="submit-btn">
-                                <button type="submit" name="submitBtn">Submit</button>
-                            </div>
-                        <?php }  ?>
+                            // Fetch complaints for the logged-in employee based on the active filter
+                            // Note: No SQL injection prevention as requested.
+                            $results = $dbo->query("SELECT compid, ctype, sub, status FROM complaints {$whereClause}");
 
-                    </div>
-                </form>
-            </main>
-           
-       
-        </div>
-        </div>
-
-        <?php if(isset($_GET['e'])): ?>
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                document.getElementById("complaintDetails").style.display = "block";
-                document.getElementById("complaintDetails").scrollIntoView({ behavior: 'smooth' });
-            });
-        </script>
-        <?php endif; ?>
+                            if ($results->rowCount() > 0) {
+                                while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
+                                    echo "<tr>";
+                                    echo "<td>" . htmlspecialchars($row['compid']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['ctype']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['sub']) . "</td>";
+                                    echo "<td class='complaint-status'>" . htmlspecialchars($row['status']) . "</td>";
+                                    // Make sure the link points to view-status.php and passes the current filter
+                                    echo "<td><a href='view-status.php?e=" . htmlspecialchars($row['compid']) . "&filter={$initialFilter}'>View Details</a></td>";
+                                    echo "</tr>";
+                                }
+                            }
+                            $displayNoComplaints = ($results->rowCount() == 0) ? '' : 'display:none;';
+                            echo "<tr class='no-complaints' style='{$displayNoComplaints}'><td colspan='5'>{$noComplaintsMessage}</td></tr>";
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="cdetails" id="complaintDetails" style="display: <?php echo (isset($_GET['e']) ? 'block' : 'none'); ?>;">
+                    <h2>Complaint Details</h2>
+                    <input type="hidden" id="cccode" name="cccode" value="<?php echo htmlspecialchars($compid); ?>" />
+                    <p><strong>Complaint ID:</strong> <?php echo htmlspecialchars($compid); ?></p>
+                    <p><strong>Type:</strong> <?php echo htmlspecialchars($ctype); ?></p>
+                    <p><strong>Subject:</strong> <?php echo htmlspecialchars($sub); ?></p>
+                    <p><strong>Description:</strong> <?php echo htmlspecialchars($descr); ?></p>
+                    <p><strong>File:</strong>
+                        <?php if (!empty($uploadedFile)): ?>
+                            <a href='<?php echo htmlspecialchars($uploadedFile); ?>' target="_blank" rel="noopener noreferrer">View Attached File</a>
+                        <?php else: ?>
+                            No file uploaded.
+                        <?php endif; ?>
+                    </p>
+                    <p><strong>Current Status:</strong> <?php echo htmlspecialchars($status); ?></p>
+                    <p><strong>Officer Remarks:</strong>
+                        <?php if(empty($offrem)) { ?>
+                            No remarks.
+                        <?php } else { ?>
+                            <?php echo htmlspecialchars($offrem); ?>
+                        <?php }?>
+                    </p>
+                    <p><strong>Admin Remarks:</strong>
+                        <?php if(empty($admrem)) { ?>
+                            No remarks.
+                        <?php } else { ?>
+                            <?php echo htmlspecialchars($admrem); ?>
+                        <?php }?>
+                    </p>
+                </div>
+            </form>
+        </main>
         <div id="overlay" class="overlay"></div>
         <script src="../js/script.js"></script>
     </body>

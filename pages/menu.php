@@ -1,5 +1,5 @@
 <?php
-    if (session_status() === PHP_SESSION_NONE) {
+    if(session_status() === PHP_SESSION_NONE){
         session_start();
     }
 
@@ -8,7 +8,7 @@
     include_once '../include/config.php';
     $ecode = $_SESSION['empcode'];
     $listemp = $dbo->query("SELECT EMPNAME, DESG, SEC, DEPT, CATEGORY FROM user WHERE empcode ='$ecode'");
-    while ($rowemp = $listemp->fetch(PDO::FETCH_ASSOC)){	
+    while($rowemp = $listemp->fetch(PDO::FETCH_ASSOC)){	
         $empname = $rowemp["EMPNAME"];
         $desg = $rowemp["DESG"];
         $sec = $rowemp['SEC'];
@@ -33,29 +33,29 @@
 
     <div class="wrapper">
         <?php
-        if ($catg === 'E') {
+        if($catg === 'E'){
         ?>
         <aside class="sidebar" id="sidebar">
             <ul class="sidebar-menu">
-                <li><a href="dashboard.php" class="sidebar-link <?= $current === 'dashboard.php' ? 'active' : '' ?>">Dashboard</a></li>
+                <!-- <li><a href="dashboard.php" class="sidebar-link <?= $current === 'dashboard.php' ? 'active' : '' ?>">Dashboard</a></li> -->
                 <li><a href="employee-page.php" class="sidebar-link <?= $current === 'employee-page.php' ? 'active' : '' ?>">New Complaint</a></li>
                 <li><a href="status.php" class="sidebar-link <?= $current === 'status.php' ? 'active' : '' ?>">Show Status</a></li>
-                <li><a href="report.php" class="sidebar-link <?= $current === 'report.php' ? 'active' : '' ?>">Report</a></li>
                 <li><a href="logout.php" class="sidebar-link <?= $current === 'logout.php' ? 'active' : '' ?>">Logout</a></li>
             </ul>
         </aside>
         <?php
-        } elseif ($catg === 'O') {
+        } 
+        else if($catg === 'O'){
         ?>
         <aside class="sidebar" id="sidebar">
             <ul class="sidebar-menu">
-                <li><a href="dashboard.php" class="sidebar-link <?= $current === 'dashboard.php' ? 'active' : '' ?>">Dashboard</a></li>
                 <li><a href="officer-page.php" class="sidebar-link <?= $current === 'officer-page.php' ? 'active' : '' ?>">All Complaints</a></li>
                 <li><a href="logout.php" class="sidebar-link <?= $current === 'logout.php' ? 'active' : '' ?>">Logout</a></li>
             </ul>
         </aside>
         <?php
-        } elseif ($catg === 'A') {
+        } 
+        else if($catg === 'A'){
         ?>
         <aside class="sidebar" id="sidebar">
             <ul class="sidebar-menu">

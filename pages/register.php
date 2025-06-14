@@ -38,7 +38,7 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
-        <title>Register</title>
+        <title>Register Page</title>
     </head>
     <body>
         <!-- navbar -->
@@ -58,30 +58,37 @@
                             <label for="empcode">Employee Code</label>
                             <input type="text" id="empcode" name="empcode" placeholder="enter empcode" required />
                         </div>
+
                         <div class="input-group">
                             <label for="empname">Employee Name</label>
                             <input type="text" id="empname" name="empname" placeholder="enter name" required />
                         </div>
+
                         <div class="input-group">
                             <label for="email">Email</label>
                             <input type="text" id="email" name="email" placeholder="enter email"/>
                         </div>
+
                         <div class="input-group">
                             <label for="phn">Phone Number</label>
                             <input type="text" id="phn" name="phn" placeholder="enter phone number" required />
                         </div>
+
                         <div class="input-group">
                             <label for="password">Password</label>
                             <input type="password" id="password" name="password" placeholder="enter password" required />
                         </div>
+
                         <div class="input-group">
                             <label for="confirm-password">Confirm Password</label>
                             <input type="password" id="confirm-password" name="confirm-password" placeholder="re-enter password" required />
                         </div>
+
                         <div class="input-group">
                             <label for="desg">Designation</label>
                             <input type="text" id="desg" name="desg" placeholder="enter designation" required />
                         </div>
+
                         <div class="input-group">
                             <label for="category">Category</label>
                             <select id="category" name="category" required>
@@ -91,6 +98,7 @@
                             <option value="A">Admin</option>
                         </select>
                         </div>
+
                         <div class="input-group">
                             <label for="dept">Department</label>
                                 <select id="dept" name="dept" required>
@@ -101,6 +109,7 @@
                                 <option value="ELE">Electrical</option>
                             </select>
                         </div>
+
                         <div class="input-group">
                             <label for="sec">Section</label>
                                 <select id="sec" name="sec" required>
@@ -121,6 +130,7 @@
                     <div class="register-btn">
                         <button type="submit" name="registerBtn">Register</button>
                     </div>
+                    
                     <div class="switch-link">
                         <p>Already have an account? <a href="../index.php" class="switch-btn">Login</a></p>
                         </div>

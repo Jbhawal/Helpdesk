@@ -17,23 +17,24 @@
         $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
 
         // Allow certain file formats
-        if (!empty($_FILES["uploadedFile"]["name"])) {
-            if ($imageFileType != "pdf" && $imageFileType != "jpg" && $imageFileType != "jpeg" && $imageFileType != "png") {
+        if(!empty($_FILES["uploadedFile"]["name"])){
+            if($imageFileType != "pdf" && $imageFileType != "jpg" && $imageFileType != "jpeg" && $imageFileType != "png"){
                 echo "<script>alert('Sorry, only PDF, JPG, JPEG & PNG files are allowed.');</script>";
                 $uploadOk = 0;
-            } else {
-                if (move_uploaded_file($_FILES["uploadedFile"]["tmp_name"], $target_file)) {
+            } 
+            else{
+                if(move_uploaded_file($_FILES["uploadedFile"]["tmp_name"], $target_file)){
                     $stmt = $dbo->prepare("INSERT INTO complaints (ctype, sub, descr, empcode, compdate, status, uploadedFile, forwardto, offname) VALUES (?, ?, ?, ?, CURDATE(), 'Pending', ?, ?, ?)");
                     $stmt->execute([$ctype, $sub, $descr, $ecode, $target_file, $fwd, $oname]);
                     echo "<script>alert('Complaint has been registered.');</script>";
                 }
             }
-        } else {
+        }
+        else{
             $stmt = $dbo->prepare("INSERT INTO complaints (ctype, sub, descr, empcode, compdate, status, forwardto, offname) VALUES (?, ?, ?, ?, CURDATE(), 'Pending', ?, ?)");
             $stmt->execute([$ctype, $sub, $descr, $ecode, $fwd, $oname]);
             echo "<script>alert('Complaint has been registered.');</script>";
         }
-
     }
 ?>
 
@@ -63,18 +64,22 @@
                                     <option value="NW">Network</option>
                                 </select>
                             </div>
+
                             <div class="input-group">
                                 <label for="subject">Subject </label>
                                 <input type="text" id="subject" name="subject" placeholder="Enter Complaint Subject" required />
                             </div>
+
                             <div class="input-group">
                                 <label for="descr">Description </label>
                                 <textarea id="descr" name="descr" rows="5" cols="40" placeholder="Describe your complaint here..."></textarea>
                             </div>
+
                             <div class="input-group">
                                 <label for="file">Upload File</label>
                                 <input type="file" id="uploadedFile" name="uploadedFile" class="upload-file" accept=".jpg, .jpeg, .png, .pdf" />
                             </div>
+
                             <div class="input-group">
                                 <label for="forward">Forward To</label>
                                 <select id="forward" name="forward" required>
@@ -88,19 +93,19 @@
                                         }
                                     ?>
                                 </select>
-                        </div>
+                            </div>
+
                             <div class="submit-btn">
                                 <button type="submit" name="submitBtn" id="submitBtn">Submit</button>
                             </div>
                         </form>
                     </div>
                 </main>
-            </div> <!--closes wrapper -->
-        </div> <!--closes page-container -->
+            </div> <!--closes wrapper(from menu.php) -->
+        </div> <!--closes page-container (from menu.php) -->
 
-    <!-- Overlay for small screen dark background -->
-    <div class="overlay" id="overlay"></div>
-
+        <!-- Overlay for small screen dark background -->
+        <div class="overlay" id="overlay"></div>
         <script src="../js/script.js"></script>
     </body>
 </html>

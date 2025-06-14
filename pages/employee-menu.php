@@ -30,12 +30,14 @@
     <body>           
         <!-- navbar+sidebar(from menu.php)+ main content  --> 
                 <?php include 'menu.php';?>
-                <main class="main-content"> 
-                    <img style="height: 300px; width:auto;" src="../images/helpdesk-image.jpg" alt="Employee Image">
-                </main>
+                        <main class="main-content"> 
+                            <img style="height: 300px; width:auto;" src="../images/helpdesk-image.jpg" alt="Employee Image">
+                        </main>
+                    </div> <!--closes wrapper(from menu.php) -->
+            </div> <!--closes page-container (from menu.php) -->
+
         <!-- Overlay for small screen dark background -->
         <div class="overlay" id="overlay"></div>
-
         <script src="../js/script.js"></script>
     </body>
 </html>
