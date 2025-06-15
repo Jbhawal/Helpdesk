@@ -1,6 +1,12 @@
+const statusFilterButton = document.getElementById('statusFilterButton');
+const dropdownContent = document.querySelector('.cstatus-select-content');
+const currentFilterInput = document.getElementById('currentFilter');
+const complaintDetailsDiv = document.querySelector('.cdetails');
+const complaintTableBody = document.querySelector('.clist-table tbody');
+
 document.addEventListener('DOMContentLoaded', () =>{
     const toggleBtn = document.getElementById('toggle-btn');
-    const sidebar = document.getElementById('sidebar');
+    const sidebar = document.querySelector('.sidebar');
     const overlay = document.getElementById('overlay');
 
     if(toggleBtn && sidebar && overlay){
@@ -15,7 +21,6 @@ document.addEventListener('DOMContentLoaded', () =>{
         });
     }
 
-    // Active link highlight
     const links = document.querySelectorAll('.sidebar-link');
     const currentPage = window.location.pathname.split('/').pop();
 
@@ -25,7 +30,6 @@ document.addEventListener('DOMContentLoaded', () =>{
         }
     });
 
-    // Status filter functionality
     if(statusFilterButton && dropdownContent && currentFilterInput && complaintDetailsDiv && complaintTableBody){
         const statusLinks = dropdownContent.querySelectorAll('a');
         const arrowSymbol = ' ▾';
@@ -41,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () =>{
 
             allTableRows.forEach(row =>{
                 if(row.classList.contains('no-complaints')){
-                    row.style.display = 'none'; 
+                    row.style.display = 'none';
                     return;
                 }
 
@@ -55,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () =>{
                     else if(rowStatus === selectedStatus){
                         row.style.display = '';
                         visibleComplaintsCount++;
-                    }
+                    } 
                     else{
                         row.style.display = 'none';
                     }
@@ -81,8 +85,8 @@ document.addEventListener('DOMContentLoaded', () =>{
                 currentFilterInput.value = selectedStatusValue;
                 const url = new URL(window.location.origin + window.location.pathname);
                 url.searchParams.set('filter', selectedStatusValue);
-                url.searchParams.delete('e'); 
-                window.location.href = url.toString(); 
+                url.searchParams.delete('e');
+                window.location.href = url.toString();
             });
         });
 
@@ -116,7 +120,6 @@ document.addEventListener('DOMContentLoaded', () =>{
                 window.location.href = url.toString();
             }
         });
-
 
         let initialFilterValueFromURL = getQueryParam('filter');
         if(!initialFilterValueFromURL){

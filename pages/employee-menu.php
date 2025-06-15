@@ -30,8 +30,9 @@
     <body>           
         <!-- navbar+sidebar(from menu.php)+ main content  --> 
                 <?php include 'menu.php';?>
-                        <main class="main-content"> 
-                            <img style="height: 300px; width:auto;" src="../images/helpdesk-image.jpg" alt="Employee Image">
+                        <main class="officer-main"> 
+                            <img style="height: 300px; width:auto; display: block; margin: 145px auto;" src="../images/helpdesk-image.jpg" alt="Employee Image">
+                            
                         </main>
                     </div> <!--closes wrapper(from menu.php) -->
             </div> <!--closes page-container (from menu.php) -->

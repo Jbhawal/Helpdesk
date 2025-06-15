@@ -39,7 +39,7 @@
             <ul class="sidebar-menu">
                 <!-- <li><a href="dashboard.php" class="sidebar-link <?= $current === 'dashboard.php' ? 'active' : '' ?>">Dashboard</a></li> -->
                 <li><a href="employee-page.php" class="sidebar-link <?= $current === 'employee-page.php' ? 'active' : '' ?>">New Complaint</a></li>
-                <li><a href="status.php" class="sidebar-link <?= $current === 'status.php' ? 'active' : '' ?>">Show Status</a></li>
+                <li><a href="view-status.php" class="sidebar-link <?= $current === 'view-status.php' ? 'active' : '' ?>">Show Status</a></li>
                 <li><a href="logout.php" class="sidebar-link <?= $current === 'logout.php' ? 'active' : '' ?>">Logout</a></li>
             </ul>
         </aside>

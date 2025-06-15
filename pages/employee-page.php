@@ -59,9 +59,9 @@
                                 <label for="ctype">Type</label>
                                 <select id="ctype" name="ctype" required>
                                     <option value="" disabled selected>Select Type</option>
-                                    <option value="HW">Hardware</option>
-                                    <option value="SW">Software</option>
-                                    <option value="NW">Network</option>
+                                    <option value="Hardware">Hardware</option>
+                                    <option value="Software">Software</option>
+                                    <option value="Network">Network</option>
                                 </select>
                             </div>
 
