@@ -4,6 +4,8 @@
 
     $ecode = $_SESSION['empcode'];
     $oquery = "SELECT EMPCODE, EMPNAME FROM user WHERE CATEGORY='O' ORDER BY EMPNAME";
+    $cat = $dbo->query("SELECT CATEGORY FROM user WHERE empcode = '$ecode'")->fetchColumn();
+
     if(isset($_POST['submitBtn'])){
 		$ctype = $_POST["ctype"];
 		$sub = $_POST["subject"];
@@ -51,7 +53,7 @@
     <body>           
         <!-- navbar+sidebar(from menu.php)+ main content  --> 
                 <?php include 'menu.php';?>
-                <main class="main-content"> 
+                <main class="main-content" style="margin-top: 20px;"> 
                     <h2>Employee Complaint Form</h2>
                     <div id="complaint-container">
                         <form action="" method="post" enctype="multipart/form-data" class="complaint-form" id="complaint-form">
@@ -82,17 +84,27 @@
 
                             <div class="input-group">
                                 <label for="forward">Forward To</label>
-                                <select id="forward" name="forward" required>
-                                    <option value=''>Select Officer</option>
-                                    <?php
-                                        $listoff = $dbo->query($oquery);
-                                        while ($rowoff = $listoff->fetch(PDO::FETCH_ASSOC)){	
-                                    ?>
-                                    <option value="<?php echo $rowoff['EMPCODE']?>"><?php echo $rowoff['EMPNAME']?></option>
-                                    <?php
-                                        }
-                                    ?>
-                                </select>
+                                <?php if($cat=='E'){ ?>
+                                    <select id="forward" name="forward" required>
+                                        <option value="" disabled selected>Select Officer</option>
+                                        <?php
+                                            $listoff = $dbo->query($oquery);
+                                            while ($rowoff = $listoff->fetch(PDO::FETCH_ASSOC)){	
+                                                ?>
+                                        <option value="<?php echo $rowoff['EMPCODE']?>"><?php echo $rowoff['EMPNAME']?></option>
+                                        <?php
+                                            }
+                                            ?>
+                                    </select>
+                                    <?php }                                 
+                                else if($cat=='O'){ ?>
+                                    <select id="forward" name="forward" required>
+                                        <option value="" disabled selected>Forward to</option>
+                                        <option value="Forwarded to Admin">Forward to Admin</option>
+                                        <?php
+                                            }
+                                        ?>
+                                    </select>
                             </div>
 
                             <div class="submit-btn">

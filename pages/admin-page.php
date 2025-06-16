@@ -218,8 +218,10 @@
                             <label for="newStatus">Change Status To</label>
                             <select id="newStatus" name="newStatus" required>
                                 <option value="" disabled selected>Select status</option>
-                                <option value="Closed">Closed</option>
+                                <option value="In Progress">In Progress</option>
+                                <option value="Return to User">Return to User</option>
                                 <option value="Rejected">Rejected</option>
+                                <option value="Closed">Closed</option>
                             </select>
                         </div>
 

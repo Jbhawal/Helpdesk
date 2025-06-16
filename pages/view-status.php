@@ -71,6 +71,8 @@
                                 <a href="#" data-status="Pending">Pending</a>
                                 <a href="#" data-status="Rejected">Rejected</a>
                                 <a href="#" data-status="Forwarded to Admin">Forwarded to Admin</a>
+                                <a href="#" data-status="In Progress">In Progress</a>
+                                <a href="#" data-status="Sent Back">Sent Back</a>
                                 <a href="#" data-status="Closed">Closed</a>
                             </div>
                         </div>

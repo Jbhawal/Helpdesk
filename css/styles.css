@@ -20,7 +20,7 @@ html, body {
     min-width: 0;
     min-height: calc(100vh - 120px);
     justify-content: center;
-    margin-top: 20px;
+    /* margin-top: 20px; */
 }
 
 .officer-main {
@@ -83,6 +83,11 @@ html, body {
     height: 40px;
 }
 
+.error-message {
+    color: #d60000;
+    font-size: 0.75rem;
+}
+
 .upload-file {
     background-color: white;
     text-align: center;
@@ -136,6 +141,7 @@ html, body {
     grid-template-columns: 1fr 1fr;
     column-gap: 20px;
     padding: 0 20px;
+    align-items: center;
 }
 
 /* NAVBAR */

@@ -1,5 +1,8 @@
 <?php
     include_once '../include/config.php';
+     $secquery = "SELECT UCODE, LONGDESC FROM mastertable WHERE CODEHEAD='SEC' ORDER BY UCODE";
+     $deptquery = "SELECT UCODE, LONGDESC FROM mastertable WHERE CODEHEAD='DEPT' ORDER BY UCODE";
+
     if(isset($_POST['registerBtn'])){
 		$ecode = $_POST["empcode"];
 		$ename = $_POST["empname"];
@@ -66,12 +69,14 @@
 
                         <div class="input-group">
                             <label for="email">Email</label>
-                            <input type="text" id="email" name="email" placeholder="enter email"/>
+                            <input type="text" id="email" name="email" placeholder="enter email" onkeyup="validateEmail()" />
+                            <div id="emailError" class="error-message"></div>
                         </div>
 
                         <div class="input-group">
                             <label for="phn">Phone Number</label>
-                            <input type="text" id="phn" name="phn" placeholder="enter phone number" required />
+                            <input type="text" id="phn" name="phn" placeholder="enter phone number" required onkeyup="validatePhoneNumber()" />
+                            <div id="phoneError" class="error-message"></div>
                         </div>
 
                         <div class="input-group">
@@ -81,7 +86,8 @@
 
                         <div class="input-group">
                             <label for="confirm-password">Confirm Password</label>
-                            <input type="password" id="confirm-password" name="confirm-password" placeholder="re-enter password" required />
+                            <input type="password" id="confirm-password" name="confirm-password" placeholder="re-enter password" required onkeyup="validatePasswordMatch()" />
+                            <div id="passwordMatchError" class="error-message"></div>
                         </div>
 
                         <div class="input-group">
@@ -103,26 +109,31 @@
                             <label for="dept">Department</label>
                                 <select id="dept" name="dept" required>
                                 <option value="" disabled selected>select department</option>
-                                <option value="ACC">Accounts</option>
-                                <option value="ENG">Engineering</option>
-                                <option value="MEC">Mechanical</option>
-                                <option value="ELE">Electrical</option>
+                                <?php
+                                        $listdept = $dbo->query($deptquery);
+                                        while ($rowdept = $listdept->fetch(PDO::FETCH_ASSOC)){	
+                                    ?>
+                                    <!-- <option value="PF">PF Section</option>  (format of option) -->
+                                    <option value="<?php echo $rowdept['UCODE']?>"><?php echo $rowdept['LONGDESC']?></option>
+                                    <?php
+                                        }
+                                    ?>
                             </select>
                         </div>
 
                         <div class="input-group">
                             <label for="sec">Section</label>
                                 <select id="sec" name="sec" required>
-                                <option value="" disabled selected>select section</option>
-                                <option value="EXP1">Expenditure-I</option>
-                                <option value="EXP2">Expenditure-II</option>
-                                <option value="SBS">Stores Bill - Stock</option>
-                                <option value="SBNS">Stores Bill - Non Stock</option>
-                                <option value="SS">Stores - Suspense</option>
-                                <option value="EBG">Establishment Bills-Gazetted</option>
-                                <option value="EBNG">Establishment Bills-Non Gazetted</option>
-                                <option value="PF">PF Section</option>
-                                <option value="PEN">Pension</option>
+                                    <option value="" disabled selected>select section</option>
+                                    <?php
+                                        $listsec = $dbo->query($secquery);
+                                        while ($rowsec = $listsec->fetch(PDO::FETCH_ASSOC)){	
+                                    ?>
+                                    <!-- <option value="PF">PF Section</option>  (format of option) -->
+                                    <option value="<?php echo $rowsec['UCODE']?>"><?php echo $rowsec['LONGDESC']?></option>
+                                    <?php
+                                        }
+                                    ?>
                             </select>
                         </div>
                     </div>
@@ -137,5 +148,6 @@
                     </form>
             </div>
         </main>
+        <script src="../js/validation.js"></script>
     </body>
 </html>
