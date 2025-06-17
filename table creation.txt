@@ -1,0 +1,91 @@
+CREATE TABLE IF NOT EXISTS `masterTable` (
+  `CODEHEAD` varchar(4) DEFAULT NULL,
+  `UCODE` int(2) DEFAULT NULL,
+  `SHORTDESC` varchar(16) DEFAULT NULL,
+  `LONGDESC` varchar(32) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `masterTable` (`CODEHEAD`, `UCODE`, `SHORTDESC`, `LONGDESC`) VALUES
+('SEC', 1, 'X-I', 'Expenditure-I'),
+('SEC', 2, 'X-II', 'Expenditure-II'),
+('SEC', 3, 'SBS', 'Stores Bill - Stock'),
+('SEC', 4, 'SBNS', 'Stores Bill - Non Stock'),
+('SEC', 5, 'STS', 'Stores - Suspense'),
+('SEC', 6, 'EGA', 'Establishment Bills-Gazetted'),
+('SEC', 7, 'ENG', 'Establishment Bills-Non Gazetted'),
+('SEC', 8, 'PF', 'PF Section'),
+('SEC', 9, 'PEN', 'Pension'),
+('SEC', 10, 'BKS', 'Books Section'),
+('SEC', 11, 'TA', 'Traffic Accounts'),
+('SEC', 12, 'TAC', 'Claims and Refunds (Traffic)'),
+('SEC', 13, 'C&P', 'Cash and Pay'),
+('SEC', 14, 'CTG', 'Catering'),
+('SEC', 15, 'SL', 'Sleeper/Tr. Earning'),
+('SEC', 16, 'WCC', 'Workmans Compensation '),
+('SEC', 17, 'RCT', 'Rly-Claims-Tribunal'),
+('SEC', 18, 'IROF/GRS', 'IROF/GRS'),
+('SEC', 19, 'LOANS', 'Loans'),
+('SEC', 20, 'NPS', 'NPS'),
+('SEC', 21, 'FUEL', 'FUEL'),
+('SEC', 22, 'WS Cordination', 'Workshop Cordination'),
+('SEC', 23, 'PRS_UTS', 'PRS UTS Section'),
+('SEC', 24, 'FAS', 'FAS'),
+('SEC', 25, 'POL/HQ-STORE', 'POL/HQ-STORE'),
+('SEC', 26, 'RBC-BO', 'Railway Board Contracts-BO'),
+('SEC', 27, 'RBC-NBO', 'Railway Board Contracts-NBO'),
+('SEC', 28, 'HIRE AND PENALTY', 'HIRE AND PENALTY'),
+('SEC', 90, 'GST(ADJ) JV', 'GST(ADJ) JV'),
+('SEC', 98, 'PORT-SECTION', 'PORT-SECTION'),
+('SEC', 99, 'OTH', 'Others'),
+('DEPT', 1, 'ACC', 'ACCOUNTS'),
+('DEPT', 2, 'ADT', 'AUDIT'),
+('DEPT', 3, 'ADM', 'GEN. ADMN.'),
+('DEPT', 4, 'COM', 'COMMERCIAL'),
+('DEPT', 5, 'ENG', 'ENGINEERING'),
+('DEPT', 6, 'ELE', 'ELECTRICAL'),
+('DEPT', 7, 'MEC', 'MECHANICAL'),
+('DEPT', 8, 'MED', 'MEDICAL'),
+('DEPT', 9, 'OPT', 'OPERATING'),
+('DEPT', 10, 'PER', 'PERSONNEL'),
+('DEPT', 11, 'SNT', 'SnT'),
+('DEPT', 12, 'STR', 'STORES'),
+('DEPT', 13, 'SEC', 'SECURITY'),
+('DEPT', 14, 'RCT', 'RCT'),
+('DEPT', 15, 'OTH', 'RLY BOARD'),
+('DEPT', 20, 'RRB', 'RRB'),
+('DEPT', 45, 'GATI', 'Gati Shakti/Construction'),
+('DEPT', 99, 'NA', 'NA');
+
+
+----------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `user` (
+  `EMPCODE` varchar(5) DEFAULT NULL,
+  `EMPNAME` varchar(50) DEFAULT NULL,
+  `EMAIL` varchar(50) DEFAULT NULL,
+  `PHNNO` varchar(15) DEFAULT NULL,
+  `PWD` varchar(35) DEFAULT NULL,
+  `DESG` varchar(25) DEFAULT NULL,
+  `SEC` varchar(50) DEFAULT NULL,
+  `CATEGORY` varchar(20) DEFAULT NULL,
+  `DEPT` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-----------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `complaints` (
+  `COMPID` varchar(5) DEFAULT NULL,
+  `CTYPE` varchar(15) DEFAULT NULL,
+  `SUB` varchar(100) DEFAULT NULL,
+  `DESCR` varchar(250) DEFAULT NULL,
+  `EMPCODE` varchar(5) DEFAULT NULL,
+  `COMPDATE` DATE DEFAULT NULL,
+  `STATUS` varchar(50) DEFAULT NULL,
+  `UPLOADEDFILE` varchar(50) DEFAULT NULL,
+  `FORWARDTO` varchar(25) DEFAULT NULL,
+  `OFFNAME` varchar(50) DEFAULT NULL,
+  `OFFREM` varchar(150) DEFAULT NULL,
+  `ADMREM` varchar(150) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
