@@ -3,9 +3,12 @@
     session_start();
 
     $ecode = $_SESSION['empcode'];
-    $oquery = "SELECT EMPCODE, EMPNAME FROM user WHERE CATEGORY='O' ORDER BY EMPNAME";
-    $cat = $dbo->query("SELECT CATEGORY FROM user WHERE empcode = '$ecode'")->fetchColumn();
-
+    $fcat='O';
+    $cat=$dbo->query("SELECT CATEGORY FROM user WHERE EMPCODE='$ecode'")->fetchColumn();
+    if($cat=='O'){
+        $fcat='A';
+    }
+    $oquery = "SELECT EMPCODE, EMPNAME FROM user WHERE CATEGORY='$fcat' ORDER BY EMPNAME";
     if(isset($_POST['submitBtn'])){
 		$ctype = $_POST["ctype"];
 		$sub = $_POST["subject"];
@@ -19,22 +22,20 @@
         $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
 
         // Allow certain file formats
-        if(!empty($_FILES["uploadedFile"]["name"])){
-            if($imageFileType != "pdf" && $imageFileType != "jpg" && $imageFileType != "jpeg" && $imageFileType != "png"){
+        if (!empty($_FILES["uploadedFile"]["name"])) {
+            if ($imageFileType != "pdf" && $imageFileType != "jpg" && $imageFileType != "jpeg" && $imageFileType != "png") {
                 echo "<script>alert('Sorry, only PDF, JPG, JPEG & PNG files are allowed.');</script>";
                 $uploadOk = 0;
-            } 
-            else{
-                if(move_uploaded_file($_FILES["uploadedFile"]["tmp_name"], $target_file)){
-                    $stmt = $dbo->prepare("INSERT INTO complaints (ctype, sub, descr, empcode, compdate, status, uploadedFile, forwardto, offname) VALUES (?, ?, ?, ?, CURDATE(), 'Pending', ?, ?, ?)");
-                    $stmt->execute([$ctype, $sub, $descr, $ecode, $target_file, $fwd, $oname]);
+            }
+            else {
+                if (move_uploaded_file($_FILES["uploadedFile"]["tmp_name"], $target_file)){
+                    $db_user = $dbo->query("INSERT INTO complaints (ctype, sub, descr, empcode, compdate, status, uploadedFile, forwardto, offname) VALUES ('$ctype', '$sub', '$descr', '$ecode', CURDATE(), 'Pending', '$target_file', '$fwd', '$oname')");
                     echo "<script>alert('Complaint has been registered.');</script>";
                 }
             }
         }
-        else{
-            $stmt = $dbo->prepare("INSERT INTO complaints (ctype, sub, descr, empcode, compdate, status, forwardto, offname) VALUES (?, ?, ?, ?, CURDATE(), 'Pending', ?, ?)");
-            $stmt->execute([$ctype, $sub, $descr, $ecode, $fwd, $oname]);
+        else {
+            $db_user = $dbo->query("INSERT INTO complaints (ctype, sub, descr, empcode, compdate, status, forwardto, offname) VALUES ('$ctype', '$sub', '$descr', '$ecode', CURDATE(), 'Pending', '$fwd', '$oname')");
             echo "<script>alert('Complaint has been registered.');</script>";
         }
     }
@@ -84,27 +85,19 @@
 
                             <div class="input-group">
                                 <label for="forward">Forward To</label>
-                                <?php if($cat=='E'){ ?>
-                                    <select id="forward" name="forward" required>
-                                        <option value="" disabled selected>Select Officer</option>
-                                        <?php
-                                            $listoff = $dbo->query($oquery);
-                                            while ($rowoff = $listoff->fetch(PDO::FETCH_ASSOC)){	
-                                                ?>
-                                        <option value="<?php echo $rowoff['EMPCODE']?>"><?php echo $rowoff['EMPNAME']?></option>
-                                        <?php
-                                            }
+                                <select id="forward" name="forward" required>
+                                    <option value="" disabled selected>Forward to</option>
+                                    <?php
+                                        $listoff = $dbo->query($oquery);
+                                        while ($rowoff = $listoff->fetch(PDO::FETCH_ASSOC)){	
                                             ?>
-                                    </select>
-                                    <?php }                                 
-                                else if($cat=='O'){ ?>
-                                    <select id="forward" name="forward" required>
-                                        <option value="" disabled selected>Forward to</option>
-                                        <option value="Forwarded to Admin">Forward to Admin</option>
-                                        <?php
-                                            }
-                                        ?>
-                                    </select>
+                                    <option value="<?php echo $rowoff['EMPCODE']?>"><?php echo $rowoff['EMPNAME']?></option>
+                                    <?php
+                                        }
+                                    ?>
+                                </select>
+                                    
+                                   
                             </div>
 
                             <div class="submit-btn">
