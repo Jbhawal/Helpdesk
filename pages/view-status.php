@@ -9,7 +9,6 @@
 
     $ecode = $_SESSION['empcode']; 
 
-    // Initialize variables for complaint details to avoid undefined variable errors
     $compid = '';
     $ctype = '';
     $sub = '';
@@ -23,7 +22,7 @@
 
     if(isset($_GET['e'])){
         $ccode = $_GET['e'];
-        $list = $dbo->query("SELECT COMPID, CTYPE, SUB, DESCR, UPLOADEDFILE, STATUS, OFFREM, ADMREM FROM complaints WHERE compid = '$ccode' AND empcode = '$ecode'");
+        $list = $dbo->query("SELECT COMPID, CTYPE, SUB, DESCR, UPLOADEDFILE, STATUS FROM complaints WHERE compid = '$ccode' AND empcode = '$ecode'");
         $row = $list->fetch(PDO::FETCH_ASSOC);
 
         if($row){
@@ -33,16 +32,14 @@
             $descr = $row['DESCR'];
             $uploadedFile = $row['UPLOADEDFILE'];
             $status = $row['STATUS'];
-            $offrem = $row['OFFREM'];
-            $admrem = $row['ADMREM'];
 
             if($status == 'Pending'){
                 $currstatus = 'P'; 
             } else{
                 $currstatus = 'N'; // Complaint is not pending(Closed, rejected, etc.)
             }
-        } else{
-            // If no complaint found, redirect to the status page with the initial filter
+        } 
+        else{
             header("Location: view-status.php?filter={$initialFilter}");
             exit();
         }
@@ -59,7 +56,7 @@
         <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
         <title>My Complaint Status</title>
     </head>
-    <body data-is-detail-view-active="<?php echo isset($_GET['e']) ? 'true' : 'false'; ?>">
+    <body data-show-details="<?php echo isset($_GET['e']) ? 'true' : 'false'; ?>">
         <?php include 'menu.php'; ?>
                 <main class="officer-main">
                     <div class="cheading">
@@ -88,33 +85,47 @@
                                         <th>Type</th>
                                         <th>Subject</th>
                                         <th>Status</th>
+                                        <th>Currently with</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php
-                                    $whereClause = " WHERE empcode = '$ecode'"; 
-                                    $noComplaintsMessage = "No complaints found.";
-
+                                    
+                                    $whereClause = " WHERE empcode = '$ecode'";
                                     if($initialFilter !== 'All'){
                                         $whereClause .= " AND status = '$initialFilter'";
-                                        $noComplaintsMessage = "No complaints found.";
                                     }
-                                    $results = $dbo->query("SELECT compid, ctype, sub, status FROM complaints{$whereClause}");
+                                    $results = $dbo->query("SELECT compid, ctype, sub, status, empcode, offempcode, admempcode, curempcode FROM complaints{$whereClause}");
+                                        if ($results) { 
+                                            while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
+                                                $curecode = $row['curempcode'];
+                                                $offempcode = $row['offempcode'];
+                                                $admempcode = $row['admempcode'];
+                                                $cname = '';
+                                                if ($curecode == $offempcode){
+                                                    $cname = $dbo->query("SELECT CATEGORY FROM user WHERE empcode = '$offempcode'")->fetchColumn();
+                                                } 
+                                                else if($curecode == $admempcode){
+                                                    $cname = $dbo->query("SELECT EMPNAME FROM user WHERE empcode = '$admempcode'")->fetchColumn();
+                                                }
+                                                else{
+                                                    $cname='Me';
+                                                }
 
-                                    if($results->rowCount() > 0){
-                                        while($row = $results->fetch(PDO::FETCH_ASSOC)){
-                                            echo "<tr>";
-                                            echo "<td>".htmlspecialchars($row['compid'])."</td>";
-                                            echo "<td>".htmlspecialchars($row['ctype'])."</td>";
-                                            echo "<td>".htmlspecialchars($row['sub'])."</td>";
-                                            echo "<td class='complaint-status'>".htmlspecialchars($row['status'])."</td>";                                            
-                                            echo "<td><a href='view-status.php?e=".htmlspecialchars($row['compid'])."&filter={$initialFilter}'>View Details</a></td>";
-                                            echo "</tr>";
+                                                echo "<tr>";
+                                                echo "<td>".htmlspecialchars($row['compid'])."</td>";
+                                                echo "<td>".htmlspecialchars($row['ctype'])."</td>";
+                                                echo "<td>".htmlspecialchars($row['sub'])."</td>";
+                                                echo "<td class='complaint-status'>".htmlspecialchars($row['status'])."</td>";
+                                                echo "<td>".htmlspecialchars($cname)."</td>";
+                                                echo "<td><a href='view-status.php?e=".htmlspecialchars($row['compid'])."&filter={$initialFilter}'>View Details</a></td>";
+                                                // echo "<td><a href='view-status.php?e=".htmlspecialchars($row['compid'])."'>View Details</a></td>";
+                                                echo "</tr>";
+                                            }
                                         }
-                                    }
                                     $displayNoComplaints =($results->rowCount() == 0) ? '' : 'display:none;';
-                                    echo "<tr class='no-complaints' style='{$displayNoComplaints}'><td colspan='5'>{$noComplaintsMessage}</td></tr>";
+                                    echo "<tr class='no-complaints' style='{$displayNoComplaints}'><td colspan='7'>No complaints found.</td></tr>";
                                     ?>
                                 </tbody>
                             </table>

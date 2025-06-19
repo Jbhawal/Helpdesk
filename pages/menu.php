@@ -1,3 +1,5 @@
+<!-- this contains the navbar and sidebar -->
+
 <?php
     if(session_status() === PHP_SESSION_NONE){
         session_start();
@@ -37,7 +39,7 @@
 
     <div class="wrapper">
         <?php
-        if($catg === 'E'){
+        if($catg === 'Employee'){
         ?>
         <aside class="sidebar" id="sidebar">
             <ul class="sidebar-menu">
@@ -49,7 +51,7 @@
         </aside>
         <?php
         } 
-        else if($catg === 'O'){
+        else if($catg === 'Officer'){
             ?>
         <aside class="sidebar" id="sidebar">
             <ul class="sidebar-menu">
@@ -60,7 +62,7 @@
         </aside>
         <?php
         } 
-        else if($catg === 'A'){
+        else if($catg === 'Admin'){
         ?>
         <aside class="sidebar" id="sidebar">
             <ul class="sidebar-menu">

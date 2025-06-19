@@ -99,9 +99,9 @@
                             <label for="category">Category</label>
                             <select id="category" name="category" required>
                             <option value="" disabled selected>select category</option>
-                            <option value="E">Employee</option>
-                            <option value="O">Officer</option>
-                            <option value="A">Admin</option>
+                            <option value="Employee">Employee</option>
+                            <option value="Officer">Officer</option>
+                            <option value="Admin">Admin</option>
                         </select>
                         </div>
 

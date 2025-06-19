@@ -1,3 +1,5 @@
+<!-- this is the first screen employee sees on login -->
+
 <?php
     if (session_status() === PHP_SESSION_NONE) {
         session_start();

@@ -11,13 +11,13 @@
             session_start();
             $_SESSION['empcode'] = $ecode;
             $catg=$dbo->query("SELECT CATEGORY FROM user WHERE empcode = '$ecode' ")->fetchColumn();
-            if($catg=='E'){
+            if($catg=='Employee'){
                 header("Location: pages/employee-menu.php");
             }
-            else if($catg=='O'){
+            else if($catg=='Officer'){
                 header("Location: pages/officer-page.php");
             }
-            else if($catg=='A'){
+            else if($catg=='Admin'){
                 header("Location: pages/admin-page.php");
             }
             exit();
