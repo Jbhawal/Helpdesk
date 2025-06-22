@@ -17,6 +17,7 @@
     $status = '';
     $offrem = '';
     $admrem = '';
+    $ccode = '';
     $currstatus = 'N'; // Default to 'N'(no special status action for employee)
     $initialFilter = isset($_GET['filter']) ? htmlspecialchars($_GET['filter']) : 'All';
 
@@ -69,7 +70,7 @@
                                 <a href="#" data-status="Rejected">Rejected</a>
                                 <a href="#" data-status="Forwarded to Admin">Forwarded to Admin</a>
                                 <a href="#" data-status="In Progress">In Progress</a>
-                                <a href="#" data-status="Sent Back">Sent Back</a>
+                                <a href="#" data-status="Return to User">Return to User</a>
                                 <a href="#" data-status="Closed">Closed</a>
                             </div>
                         </div>
@@ -150,23 +151,42 @@
                             </p>
 
                             <p><strong>Current Status:</strong> <?php echo htmlspecialchars($status); ?></p>
-
-                            <p><strong>Officer Remarks:</strong>
-
-                                <?php if(empty($offrem)){ ?>
-                                    No remarks.
-                                <?php } else{ ?>
-                                    <?php echo htmlspecialchars($offrem); ?>
-                                <?php }?>
-                            </p>
-                            
-                            <p><strong>Admin Remarks:</strong>
-                                <?php if(empty($admrem)){ ?>
-                                    No remarks.
-                                <?php } else{ ?>
-                                    <?php echo htmlspecialchars($admrem); ?>
-                                <?php }?>
-                            </p>
+                            <p><strong></strong>Remarks in table below.</strong></p>
+                        </div>
+                        <!-- remarks history table -->
+                        <div class="clist-container">
+                            <table class="clist-table">
+                                <thead>
+                                    <tr>
+                                        <th>For Status</th>
+                                        <th>Remarks By</th>
+                                        <th>Remarks</th>
+                                        <th>Remarks Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                    
+                                        $results = $dbo->query("SELECT FORSTATUS, CATEGORY, REMARKS, REMDATE FROM history WHERE COMPID='$ccode' ORDER BY ROWID");
+                                        if ($results) { 
+                                            while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
+                                                $hforstatus = $row['FORSTATUS'];
+                                                $hcatg = $row['CATEGORY'];
+                                                $hrem = $row['REMARKS'];
+                                                $hremdate = $row['REMDATE'];
+                                                echo "<tr>";
+                                                echo "<td>".htmlspecialchars($hforstatus)."</td>";
+                                                echo "<td>".htmlspecialchars($hcatg)."</td>";
+                                                echo "<td>".htmlspecialchars($hrem)."</td>";
+                                                echo "<td>".htmlspecialchars($hremdate)."</td>";
+                                                echo "</tr>";
+                                            }
+                                        } 
+                                        $displayNoComplaints =($results->rowCount() == 0) ? '' : 'display:none;';
+                                        echo "<tr class='no-complaints' style='{$displayNoComplaints}'><td colspan='4'>No Remarks found.</td></tr>";
+                                    ?>
+                                </tbody>
+                            </table>
                         </div>
                     </form>
                 </main>

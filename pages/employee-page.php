@@ -89,7 +89,7 @@
 
                             <div class="input-group">
                                 <label for="forward">Forward To</label>
-                                <?php if($cat=='E'){ ?>
+                                <?php if($cat=='Employee'){ ?>
                                     <select id="forward" name="forward" required>
                                         <option value="" disabled selected>Select Officer</option>
                                         <?php
@@ -102,7 +102,7 @@
                                             ?>
                                     </select>
                                     <?php }                                 
-                                else if($cat=='O'){ ?>
+                                else if($cat=='Officer'){ ?>
                                     <select id="forward" name="forward" required>
                                         <option value="" disabled selected>Forward to</option>
                                         <option value="Forwarded to Admin">Forward to Admin</option>

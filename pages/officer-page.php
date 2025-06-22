@@ -14,6 +14,8 @@
     $uploadedFile = '';
     $currstatus = '';
     $offrem  = '';
+    $currec = '';
+    $ccode = '';
 
     if(!isset($_SESSION['empcode'])){
         header("Location: ../index.php");
@@ -32,12 +34,17 @@
 		$db_user = $dbo->query("UPDATE complaints SET status='$ost' WHERE compid='$ccode'");
 		if (($ostatus == 'RJ') || ($ostatus == 'RU')) {
 			$oecode = $dbo->query("SELECT EMPCODE FROM complaints WHERE compid='$ccode'")->fetchColumn();
-			$db_user = $dbo->query("UPDATE complaints SET CUREMPCODE= $oecode WHERE compid='$ccode'");
+			$db_user = $dbo->query("UPDATE complaints SET CUREMPCODE= '$oecode' WHERE compid='$ccode'");
 		}
 		else{	
-			$oecode = $dbo->query("SELECT MAX(EMPCODE) EC FROM user WHERE CATEGORY='A'")->fetchColumn();
-			$db_user = $dbo->query("UPDATE complaints SET ADMEMPCODE=$oecode, CUREMPCODE= $oecode WHERE compid='$ccode'");
+			$oecode = $dbo->query("SELECT MAX(EMPCODE) EC FROM user WHERE CATEGORY='Admin'")->fetchColumn();
+			$db_user = $dbo->query("UPDATE complaints SET ADMEMPCODE='$oecode', CUREMPCODE= '$oecode' WHERE compid='$ccode'");
 		}
+
+        if ($oremarks <> '') {  //<> same as !=
+            $db_ins1 = $dbo->query("INSERT INTO history (COMPID, FORSTATUS, CATEGORY, REMARKS, REMDATE) VALUES ('$ccode', '$ost', 'Officer', '$oremarks', CURDATE())");
+        }
+
 		echo "<script>
                     alert('Update successful.');
                     window.location.href = 'officer-page.php?filter={$originalFilter}';
@@ -46,7 +53,7 @@
 
     if(isset($_GET['e'])){
         $ccode  = $_GET['e'];  //complaint code/id
-        $list=$dbo->query("SELECT COMPID, CTYPE, SUB, DESCR, UPLOADEDFILE, STATUS FROM complaints WHERE compid = '$ccode'");
+        $list=$dbo->query("SELECT COMPID, CTYPE, SUB, DESCR, UPLOADEDFILE, STATUS, CUREMPCODE FROM complaints WHERE compid = '$ccode'");
         $row = $list->fetch(PDO::FETCH_ASSOC);
         if($row){
             $compid  = $row['COMPID'];
@@ -55,6 +62,7 @@
             $descr = $row['DESCR'];
             $uploadedFile = $row['UPLOADEDFILE'];
             $status = $row['STATUS'];
+            $currec = $row['CUREMPCODE'];
             if($status == 'Pending'){
                 $currstatus='P';
             }
@@ -153,7 +161,7 @@
                                     ?>
                                 </tbody>
                             </table>
-                </div>
+                        </div>
                 <div class="cdetails" id="complaintDetails" style="display: <?php echo(isset($_GET['e']) ? 'block' : 'none'); ?>;">
                     <h2>Complaint Details</h2>
                     <input type="hidden" id="cccode" name="cccode" value="<?php echo htmlspecialchars($compid); ?>" />
@@ -169,33 +177,67 @@
                         <?php endif; ?>
                     </p>
                     <p><strong>Status:</strong> <?php echo htmlspecialchars($status); ?></p>
+
                     <div class="input-group">
-                        <label for="oremarks">Officer Remarks: </label>
-                        <?php if($currstatus=='P'){ ?>
+                        <?php if($curecode==$ecode && $currstatus=='P'){ ?>
+                            <label for="oremarks">Officer Remarks: </label>                        
                             <input type="text" id="oremarks" name="oremarks" placeholder="enter remarks" value="<?php echo htmlspecialchars($offrem); ?>"/>
-                        <?php } else if($offrem==''){ ?>
-                            <p><?php echo 'No remarks'; ?> </p>
-                        <?php } else { ?>
-                            <p><?php echo htmlspecialchars($offrem); ?> </p>
-                        <?php }?>
-                    </div>
-
-                    <?php if($currstatus=='P'){ ?>
-                        <div class="input-group">
-                            <label for="ostatus">Update Status</label>
-                            <select id="ostatus" name="ostatus" required>
-                                <option value="" disabled selected>select status</option>
-                                <option value="RJ">Rejected</option>
-                                <option value="RU">Return to User</option>
-                                <option value="FA">Forward to Admin</option>
-                            </select>
                         </div>
-
+                        
+                        <!-- <?php 
+                        // if($currstatus=='P'){ ?> -->
+                            <div class="input-group">
+                                <label for="ostatus">Update Status</label>
+                                <select id="ostatus" name="ostatus" required>
+                                    <option value="" disabled selected>select status</option>
+                                    <option value="RJ">Rejected</option>
+                                    <option value="RU">Return to User</option>
+                                    <option value="FA">Forward to Admin</option>
+                                </select>
+                                <?php 
+                            // }?>
+                        </div>
+                        
                         <div class="submit-btn">
                             <button type="submit" name="submitBtn">Submit</button>
+                            <?php } ?>
                         </div>
-                    <?php } ?>
-                </div>
+                    </div>
+<!-- remarks history table -->
+                        <div class="clist-container">
+                            <table class="clist-table">
+                                <thead>
+                                    <tr>
+                                        <th>For Status</th>
+                                        <th>Remarks By</th>
+                                        <th>Remarks</th>
+                                        <th>Remarks Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                    
+                                        $results = $dbo->query("SELECT FORSTATUS, CATEGORY, REMARKS, REMDATE FROM history WHERE COMPID='$ccode' ORDER BY ROWID");
+                                        if ($results) { 
+                                            while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
+                                                $hforstatus = $row['FORSTATUS'];
+                                                $hcatg = $row['CATEGORY'];
+                                                $hrem = $row['REMARKS'];
+                                                $hremdate = $row['REMDATE'];
+                                                echo "<tr>";
+                                                echo "<td>".htmlspecialchars($hforstatus)."</td>";
+                                                echo "<td>".htmlspecialchars($hcatg)."</td>";
+                                                echo "<td>".htmlspecialchars($hrem)."</td>";
+                                                echo "<td>".htmlspecialchars($hremdate)."</td>";
+                                                echo "</tr>";
+                                            }
+                                        } 
+                                        $displayNoComplaints =($results->rowCount() == 0) ? '' : 'display:none;';
+                                        echo "<tr class='no-complaints' style='{$displayNoComplaints}'><td colspan='4'>No Remarks found.</td></tr>";
+                                    ?>
+                                </tbody>
+                            </table>
+                        </div>
             </form>
         </main>
         </div>

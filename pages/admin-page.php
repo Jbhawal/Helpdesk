@@ -22,7 +22,6 @@
     $admrem  = '';
 
     if (isset($_POST['submitBtn'])) {
-        $oremarks = trim($_POST["oremarks"]);
         $admrem = trim($_POST["admremarks"]);
         $ccode  = trim($_POST["cccode"]);
         $astatus = trim($_POST["astatus"]);
@@ -31,6 +30,7 @@
         if ($astatus == 'CL') $ast = 'Closed';
 
         $db_user = $dbo->query("UPDATE complaints SET status='$ast', ADMREMARKS='$admrem' WHERE compid='$ccode'");
+        $db_user = $dbo->query("INSERT INTO history (compid, arem, adate) VALUES ('$compid', '$admrem', currdate)");
 
         if ($astatus == 'RU') {
             $originalUser = $dbo->query("SELECT EMPCODE FROM complaints WHERE compid='$ccode'")->fetchColumn();
@@ -56,7 +56,7 @@
             $descr = $row['DESCR'];
             $uploadedFile = $row['UPLOADEDFILE'];
             $status = $row['STATUS'];
-            $currstatus = ($status == 'Forwarded to Admin') ? 'P' : 'N';
+            $currstatus = ($status == 'Pending') ? 'P' : 'N';
         } else {
             echo "<script>alert('Complaint not found.');
             window.location.href = 'adminPg.php';</script>";
@@ -130,7 +130,7 @@
                                     echo "<td>".htmlspecialchars($row['sub'])."</td>";
                                     echo "<td class='complaint-status'>".htmlspecialchars($row['status'])."</td>";
                                     echo "<td>".htmlspecialchars($cname)."</td>";
-                                    echo "<td><a href='adminPg.php?e=".htmlspecialchars($row['compid'])."'>View Details</a></td>";
+                                    echo "<td><a href='admin-page.php?e=".htmlspecialchars($row['compid'])."'>View Details</a></td>";
                                     echo "</tr>";
                                 }
                             }
@@ -157,6 +157,12 @@
                         <?php endif; ?>
                     </p>
                     <p><strong>Status:</strong> <?php echo htmlspecialchars($status); ?></p>
+                    <p><strong>Officer Remarks: </strong>
+                    <?php if ($offrem): ?>
+                            <p><?php echo htmlspecialchars($offrem); ?>"/>
+                        <?php else: ?>
+                            <p><?php echo ($admrem == '') ? 'No remarks' : htmlspecialchars($admrem); ?></p>
+                        <?php endif; ?>
 
                     <div class="input-group">
                         <label for="admremarks">Admin Remarks: </label>
