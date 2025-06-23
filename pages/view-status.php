@@ -8,6 +8,7 @@
     }
 
     $ecode = $_SESSION['empcode']; 
+    
 
     $compid = '';
     $ctype = '';
@@ -18,12 +19,13 @@
     $offrem = '';
     $admrem = '';
     $ccode = '';
+    $oename = '';
     $currstatus = 'N'; // Default to 'N'(no special status action for employee)
     $initialFilter = isset($_GET['filter']) ? htmlspecialchars($_GET['filter']) : 'All';
 
     if(isset($_GET['e'])){
         $ccode = $_GET['e'];
-        $list = $dbo->query("SELECT COMPID, CTYPE, SUB, DESCR, UPLOADEDFILE, STATUS FROM complaints WHERE compid = '$ccode' AND empcode = '$ecode'");
+        $list = $dbo->query("SELECT COMPID, CTYPE, SUB, DESCR, UPLOADEDFILE, STATUS, OFFEMPCODE FROM complaints WHERE compid = '$ccode' AND empcode = '$ecode'");
         $row = $list->fetch(PDO::FETCH_ASSOC);
 
         if($row){
@@ -33,7 +35,8 @@
             $descr = $row['DESCR'];
             $uploadedFile = $row['UPLOADEDFILE'];
             $status = $row['STATUS'];
-
+            $oecode = $row['OFFEMPCODE'];
+            $oename = $dbo->query("SELECT EMPNAME FROM user WHERE EMPCODE='$oecode'")->fetchColumn();
             if($status == 'Pending'){
                 $currstatus = 'P'; 
             } else{
@@ -45,6 +48,34 @@
             exit();
         }
     }
+
+    if (isset($_POST['submitBtn'])) {
+        $eremarks = trim($_POST["eremarks"]);
+        $ccode = $_POST["cccode"];
+        $oecode = $dbo->query("SELECT offempcode FROM complaints WHERE compid='$ccode'")->fetchColumn();
+
+        $dbo->query("INSERT INTO history (COMPID, FORSTATUS, CATEGORY, REMARKS, REMDATE) 
+                    VALUES ('$ccode', 'Pending', 'Employee', '$eremarks', CURDATE())");
+        $dbo->query("UPDATE complaints SET STATUS='Pending', CUREMPCODE='$oecode' WHERE compid='$ccode'");
+
+        if (!empty($_FILES["uploadedFile"]["name"])) {
+            $target_dir = "../uploads/";
+            $target_file = $target_dir . basename($_FILES["uploadedFile"]["name"]);
+            $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+
+            if (!in_array($imageFileType, ['pdf', 'jpg', 'jpeg', 'png'])) {
+                echo "<script>alert('Only PDF, JPG, JPEG & PNG files are allowed.');</script>";
+            }
+            else{
+                if (move_uploaded_file($_FILES["uploadedFile"]["tmp_name"], $target_file)) {
+                    $dbo->query("UPDATE complaints SET uploadedFile='$target_file' WHERE compid='$ccode'");
+                }
+            }
+        }
+        echo "<script>alert('Complaint forwarded.'); window.location.href = 'view-status.php';</script>";
+        exit();
+    }
+
 ?>
 
 <!DOCTYPE html>
@@ -75,7 +106,7 @@
                             </div>
                         </div>
                     </div>
-                    <form action="" method="post" class="complaint-form">
+                    <form action="" method="post" enctype="multipart/form-data" class="complaint-form">
                         <input type="hidden" id="currentFilter" name="currentFilter" value="<?php echo $initialFilter; ?>">
 
                         <div class="clist-container">
@@ -144,14 +175,50 @@
 
                             <p><strong>File:</strong>
                                 <?php if(!empty($uploadedFile)): ?>
-                                    <a href='<?php echo htmlspecialchars($uploadedFile); ?>' target="_blank" rel="noopener noreferrer">View Attached File</a>
+                                    <a href="/uploads/<?php echo basename($uploadedFile); ?>" target="_blank">View Attached File</a>
                                 <?php else: ?>
                                     No file uploaded.
                                 <?php endif; ?>
-                            </p>
 
+                            </p>
+                                        
                             <p><strong>Current Status:</strong> <?php echo htmlspecialchars($status); ?></p>
-                            <p><strong></strong>Remarks in table below.</strong></p>
+                            
+                            
+                            <?php if($status === 'Return to User'){ ?>
+                                <div class="input-group">
+                                    <label for="eremarks">My Remarks: </label>                        
+                                    <input type="text" id="eremarks" name="eremarks" placeholder="enter your remarks" value="<?php echo htmlspecialchars($offrem); ?>" required/>
+                                </div>
+
+                                <div class="input-group">
+                                <label for="file">Upload File</label>
+                                <input type="file" id="uploadedFile" name="uploadedFile" class="upload-file" accept=".jpg, .jpeg, .png, .pdf" />
+                            </div>
+                            
+                            
+
+                            <p><strong>Forward To:</strong> <?php echo htmlspecialchars($oename); ?></p>
+
+                                <!-- <div class="input-group">
+                                    <label for="forward">Forward To</label>
+                                    <select id="forward" name="forward" required>
+                                        <option value="" disabled selected>Select Officer</option>
+                                        
+                                            <option value="<?php echo $rowoff['EMPCODE']?>"><?php echo $rowoff['EMPNAME']?></option>
+                                            
+                                        
+                                    </select>
+                                </div> -->
+
+                                <div class="submit-btn">
+                                    <button type="submit" name="submitBtn" id="submitBtn">Submit</button>
+                                </div>
+                            <?php } 
+                            else{ ?>
+                                <p>Remarks can be found below.</p>
+                            <?php } ?>
+
                         </div>
                         <!-- remarks history table -->
                         <div class="clist-container">

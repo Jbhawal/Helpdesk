@@ -16,6 +16,7 @@
     $offrem  = '';
     $currec = '';
     $ccode = '';
+    $curr = '';
 
     if(!isset($_SESSION['empcode'])){
         header("Location: ../index.php");
@@ -53,7 +54,8 @@
 
     if(isset($_GET['e'])){
         $ccode  = $_GET['e'];  //complaint code/id
-        $list=$dbo->query("SELECT COMPID, CTYPE, SUB, DESCR, UPLOADEDFILE, STATUS, CUREMPCODE FROM complaints WHERE compid = '$ccode'");
+        $list = $dbo->query("SELECT COMPID, CTYPE, SUB, DESCR, UPLOADEDFILE, STATUS, OFFEMPCODE, CUREMPCODE FROM complaints WHERE compid = '$ccode'");
+
         $row = $list->fetch(PDO::FETCH_ASSOC);
         if($row){
             $compid  = $row['COMPID'];
@@ -63,6 +65,7 @@
             $uploadedFile = $row['UPLOADEDFILE'];
             $status = $row['STATUS'];
             $currec = $row['CUREMPCODE'];
+
             if($status == 'Pending'){
                 $currstatus='P';
             }
@@ -178,31 +181,30 @@
                     </p>
                     <p><strong>Status:</strong> <?php echo htmlspecialchars($status); ?></p>
 
-                    <div class="input-group">
-                        <?php if($curecode==$ecode && $currstatus=='P'){ ?>
-                            <label for="oremarks">Officer Remarks: </label>                        
-                            <input type="text" id="oremarks" name="oremarks" placeholder="enter remarks" value="<?php echo htmlspecialchars($offrem); ?>"/>
+                    <?php if($currec == $ecode && trim($currstatus) === 'P'){ ?>
+                        <div class="input-group">
+                                <label for="oremarks">Officer Remarks: </label>                        
+                                <input type="text" id="oremarks" name="oremarks" placeholder="enter remarks" value="<?php echo htmlspecialchars($offrem); ?>"/>
                         </div>
-                        
-                        <!-- <?php 
-                        // if($currstatus=='P'){ ?> -->
-                            <div class="input-group">
-                                <label for="ostatus">Update Status</label>
-                                <select id="ostatus" name="ostatus" required>
-                                    <option value="" disabled selected>select status</option>
-                                    <option value="RJ">Rejected</option>
-                                    <option value="RU">Return to User</option>
-                                    <option value="FA">Forward to Admin</option>
-                                </select>
-                                <?php 
-                            // }?>
+                            
+                        <div class="input-group">
+                            <label for="ostatus">Update Status</label>
+                            <select id="ostatus" name="ostatus" required>
+                                <option value="" disabled selected>select status</option>
+                                <option value="RJ">Rejected</option>
+                                <option value="RU">Return to User</option>
+                                <option value="FA">Forward to Admin</option>
+                            </select>                            
                         </div>
                         
                         <div class="submit-btn">
                             <button type="submit" name="submitBtn">Submit</button>
-                            <?php } ?>
                         </div>
-                    </div>
+                    <?php } 
+                    else{ ?>
+                        <p>Remarks can be found below.</p>
+                    <?php } ?>
+                </div>
 <!-- remarks history table -->
                         <div class="clist-container">
                             <table class="clist-table">
