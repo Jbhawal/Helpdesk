@@ -99,7 +99,6 @@
                                 <a href="#" data-status="All">All</a>
                                 <a href="#" data-status="Pending">Pending</a>
                                 <a href="#" data-status="Rejected">Rejected</a>
-                                <a href="#" data-status="Forwarded to Admin">Forwarded to Admin</a>
                                 <a href="#" data-status="In Progress">In Progress</a>
                                 <a href="#" data-status="Return to User">Return to User</a>
                                 <a href="#" data-status="Closed">Closed</a>
@@ -141,7 +140,7 @@
                                                 else if($curecode == $admempcode){
                                                     $cname = $dbo->query("SELECT EMPNAME FROM user WHERE empcode = '$admempcode'")->fetchColumn();
                                                 }
-                                                else{
+                                                else if ($status!='Closed'){
                                                     $cname='Me';
                                                 }
 
@@ -152,7 +151,6 @@
                                                 echo "<td class='complaint-status'>".htmlspecialchars($row['status'])."</td>";
                                                 echo "<td>".htmlspecialchars($cname)."</td>";
                                                 echo "<td><a href='view-status.php?e=".htmlspecialchars($row['compid'])."&filter={$initialFilter}'>View Details</a></td>";
-                                                // echo "<td><a href='view-status.php?e=".htmlspecialchars($row['compid'])."'>View Details</a></td>";
                                                 echo "</tr>";
                                             }
                                         }

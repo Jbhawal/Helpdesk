@@ -102,7 +102,7 @@
                                 <a href="#" data-status="All">All</a>
                                 <a href="#" data-status="Pending">Pending</a>
                                 <a href="#" data-status="Rejected">Rejected</a>
-                                <a href="#" data-status="Forwarded to Admin">Forwarded to Admin</a>
+                                <a href="#" data-status="Return to User">Return to User</a>
                                 <a href="#" data-status="Closed">Closed</a>
                             </div>
                         </div>
@@ -181,7 +181,7 @@
                     </p>
                     <p><strong>Status:</strong> <?php echo htmlspecialchars($status); ?></p>
 
-                    <?php if($currec == $ecode && trim($currstatus) === 'P'){ ?>
+                    <?php if(($currec == $ecode && trim($currstatus) === 'P' )|| ($status === 'Return to User') ){ ?>
                         <div class="input-group">
                                 <label for="oremarks">Officer Remarks: </label>                        
                                 <input type="text" id="oremarks" name="oremarks" placeholder="enter remarks" value="<?php echo htmlspecialchars($offrem); ?>"/>

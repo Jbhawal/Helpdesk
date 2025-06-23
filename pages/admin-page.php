@@ -20,34 +20,39 @@
     $currstatus = '';
     $offrem  = '';
     $admrem  = '';
+    $curecode = '';
 
     if (isset($_POST['submitBtn'])) {
         $admrem = trim($_POST["admremarks"]);
         $ccode  = trim($_POST["cccode"]);
         $astatus = trim($_POST["astatus"]);
         $originalFilter = trim($_POST["originalFilter"]);
-        if ($astatus == 'RU') $ast = 'Return to User';
-        if ($astatus == 'CL') $ast = 'Closed';
 
-        $db_user = $dbo->query("UPDATE complaints SET status='$ast', ADMREMARKS='$admrem' WHERE compid='$ccode'");
-        $db_user = $dbo->query("INSERT INTO history (compid, arem, adate) VALUES ('$compid', '$admrem', currdate)");
+        if ($astatus == 'RU') $ast = 'Return to User';
+        if ($astatus == 'IP') $ast = 'In Progress';
+        if ($astatus == 'CL') $ast = 'Closed';
+        if ($astatus == 'RJ') $ast = 'Rejected';
+
+        $dbo->query("UPDATE complaints SET status='$ast' WHERE compid='$ccode'");
+        $dbo->query("INSERT INTO history (COMPID, FORSTATUS, CATEGORY, REMARKS, REMDATE) 
+                    VALUES ('$ccode', '$astatus', 'Admin', '$admrem', CURDATE())");
 
         if ($astatus == 'RU') {
             $originalUser = $dbo->query("SELECT EMPCODE FROM complaints WHERE compid='$ccode'")->fetchColumn();
-            $db_user = $dbo->query("UPDATE complaints SET CUREMPCODE=$originalUser WHERE compid='$ccode'");
+            $dbo->query("UPDATE complaints SET CUREMPCODE=$originalUser WHERE compid='$ccode'");
         } else {
-            $db_user = $dbo->query("UPDATE complaints SET CUREMPCODE=NULL WHERE compid='$ccode'");
+            $dbo->query("UPDATE complaints SET CUREMPCODE=NULL WHERE compid='$ccode'");
         }
 
         echo "<script>
                 alert('Update successful.');
-                window.location.href = 'adminPg.php?filter={$originalFilter}';
+                window.location.href = 'admin-page.php?filter={$originalFilter}';
               </script>";
     }
 
     if (isset($_GET['e'])) {
         $ccode = $_GET['e'];
-        $list = $dbo->query("SELECT COMPID, CTYPE, SUB, DESCR, UPLOADEDFILE, STATUS FROM complaints WHERE compid = '$ccode'");
+        $list = $dbo->query("SELECT COMPID, CTYPE, SUB, DESCR, UPLOADEDFILE, STATUS, CUREMPCODE FROM complaints WHERE compid = '$ccode'");
         $row = $list->fetch(PDO::FETCH_ASSOC);
         if ($row) {
             $compid = $row['COMPID'];
@@ -56,7 +61,8 @@
             $descr = $row['DESCR'];
             $uploadedFile = $row['UPLOADEDFILE'];
             $status = $row['STATUS'];
-            $currstatus = ($status == 'Pending') ? 'P' : 'N';
+            $curecode = $row['CUREMPCODE'];
+            $currstatus = (!in_array($status, ['Return to User', 'Rejected', 'Closed'])) ? 'P' : 'N';
         } else {
             echo "<script>alert('Complaint not found.');
             window.location.href = 'adminPg.php';</script>";
@@ -85,8 +91,9 @@
                     <div class="cstatus-select-content">
                         <a href="#" data-status="All">All</a>
                         <a href="#" data-status="Pending">Pending</a>
-                        <a href="#" data-status="Forwarded to Admin">Forwarded to Admin</a>
                         <a href="#" data-status="Return to User">Return to User</a>
+                        <a href="#" data-status="In Progress">In Progress</a>
+                        <a href="#" data-status="Rejected">Rejected</a>
                         <a href="#" data-status="Closed">Closed</a>
                     </div>
                 </div>
@@ -157,19 +164,14 @@
                         <?php endif; ?>
                     </p>
                     <p><strong>Status:</strong> <?php echo htmlspecialchars($status); ?></p>
-                    <p><strong>Officer Remarks: </strong>
-                    <?php if ($offrem): ?>
-                            <p><?php echo htmlspecialchars($offrem); ?>"/>
-                        <?php else: ?>
-                            <p><?php echo ($admrem == '') ? 'No remarks' : htmlspecialchars($admrem); ?></p>
-                        <?php endif; ?>
+
 
                     <div class="input-group">
-                        <label for="admremarks">Admin Remarks: </label>
                         <?php if ($currstatus == 'P'): ?>
+                        <label for="admremarks">Admin Remarks: </label>
                             <input type="text" id="admremarks" name="admremarks" placeholder="Enter remarks" value="<?php echo htmlspecialchars($admrem); ?>"/>
                         <?php else: ?>
-                            <p><?php echo ($admrem == '') ? 'No remarks' : htmlspecialchars($admrem); ?></p>
+                            <p><?php echo ($admrem == '') ? 'Remarks can be found below.' : htmlspecialchars($admrem); ?></p>
                         <?php endif; ?>
                     </div>
 
@@ -179,6 +181,8 @@
                             <select id="astatus" name="astatus" required>
                                 <option value="" disabled selected>Select status</option>
                                 <option value="RU">Return to User</option>
+                                <option value="IP">In Progress</option>
+                                <option value="RJ">Rejected</option>
                                 <option value="CL">Closed</option>
                             </select>
                         </div>
@@ -186,6 +190,43 @@
                             <button type="submit" name="submitBtn">Submit</button>
                         </div>
                     <?php endif; ?>
+                </div>
+
+
+                <!-- remarks history table -->
+                <div class="clist-container">
+                    <table class="clist-table">
+                        <thead>
+                            <tr>
+                                <th>For Status</th>
+                                <th>Remarks By</th>
+                                <th>Remarks</th>
+                                <th>Remarks Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            
+                                $results = $dbo->query("SELECT FORSTATUS, CATEGORY, REMARKS, REMDATE FROM history WHERE COMPID='$ccode' ORDER BY ROWID");
+                                if ($results) { 
+                                    while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
+                                        $hforstatus = $row['FORSTATUS'];
+                                        $hcatg = $row['CATEGORY'];
+                                        $hrem = $row['REMARKS'];
+                                        $hremdate = $row['REMDATE'];
+                                        echo "<tr>";
+                                        echo "<td>".htmlspecialchars($hforstatus)."</td>";
+                                        echo "<td>".htmlspecialchars($hcatg)."</td>";
+                                        echo "<td>".htmlspecialchars($hrem)."</td>";
+                                        echo "<td>".htmlspecialchars($hremdate)."</td>";
+                                        echo "</tr>";
+                                    }
+                                } 
+                                $displayNoComplaints =($results->rowCount() == 0) ? '' : 'display:none;';
+                                echo "<tr class='no-complaints' style='{$displayNoComplaints}'><td colspan='4'>No Remarks found.</td></tr>";
+                            ?>
+                        </tbody>
+                    </table>
                 </div>
             </form>
         </main>
