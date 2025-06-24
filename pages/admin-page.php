@@ -35,12 +35,16 @@
 
         $dbo->query("UPDATE complaints SET status='$ast' WHERE compid='$ccode'");
         $dbo->query("INSERT INTO history (COMPID, FORSTATUS, CATEGORY, REMARKS, REMDATE) 
-                    VALUES ('$ccode', '$astatus', 'Admin', '$admrem', CURDATE())");
+                    VALUES ('$ccode', '$ast', 'Admin', '$admrem', CURDATE())");
 
         if ($astatus == 'RU') {
             $originalUser = $dbo->query("SELECT EMPCODE FROM complaints WHERE compid='$ccode'")->fetchColumn();
             $dbo->query("UPDATE complaints SET CUREMPCODE=$originalUser WHERE compid='$ccode'");
-        } else {
+        }
+        else if($astatus == 'IP'){
+            $dbo->query("UPDATE complaints SET CUREMPCODE=$ecode WHERE compid='$ccode'");
+        }
+        else {
             $dbo->query("UPDATE complaints SET CUREMPCODE=NULL WHERE compid='$ccode'");
         }
 
@@ -134,7 +138,7 @@
                                     echo "<td>".htmlspecialchars($row['compid'])."</td>";
                                     echo "<td>".htmlspecialchars($row['ctype'])."</td>";
                                     echo "<td>".htmlspecialchars($cbyname)."</td>";
-                                    echo "<td>".htmlspecialchars($row['sub'])."</td>";
+                                    echo "<td <td style='word-wrap: break-word; overflow-wrap: break-word; white-space: normal; max-width: 200px;'>".htmlspecialchars($row['sub'])."</td>";
                                     echo "<td class='complaint-status'>".htmlspecialchars($row['status'])."</td>";
                                     echo "<td>".htmlspecialchars($cname)."</td>";
                                     echo "<td><a href='admin-page.php?e=".htmlspecialchars($row['compid'])."'>View Details</a></td>";

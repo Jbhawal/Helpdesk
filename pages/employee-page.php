@@ -2,47 +2,56 @@
     include_once '../include/config.php';
     session_start();
 
-    $ecode = $_SESSION['empcode'];
-    $oquery = "SELECT EMPCODE, EMPNAME FROM user WHERE CATEGORY='Officer' ORDER BY EMPNAME";
-    $cat = $dbo->query("SELECT CATEGORY FROM user WHERE empcode = '$ecode'")->fetchColumn();
+    if (!isset($_SESSION['empcode'])) {
+        header("Location: ../index.php");
+        exit();
+    }
 
-    if(isset($_POST['submitBtn'])){
-		$ofwd = '';
-		$afwd = '';
-		$ctype = $_POST["ctype"];
-		$sub = $_POST["subject"];
+    $ecode = $_SESSION['empcode'];
+    $cat = $dbo->query("SELECT CATEGORY FROM user WHERE empcode = '$ecode'")->fetchColumn();
+    $oquery = "SELECT EMPCODE, EMPNAME FROM user WHERE CATEGORY='Officer' ORDER BY EMPNAME";
+
+    if (isset($_POST['submitBtn'])) {
+        $ctype = $_POST["ctype"];
+        $sub = $_POST["subject"];
         $descr = $_POST["descr"];
-		$fwd = $_POST["forward"];
-        $otype = $dbo->query("SELECT CATEGORY FROM user WHERE empcode = '$fwd'")->fetchColumn();
-        $oname = $dbo->query("SELECT EMPNAME FROM user WHERE empcode = '$fwd'")->fetchColumn();
-		if ($otype == 'Officer') 	$ofwd 	= $fwd;
-		if ($otype == 'Admin') 	$afwd 	= $fwd;
-		if ($cat == 'Officer') 	$ofwd 	= $ecode;
+
+        $ofwd = '';
+        $afwd = '';
+        $curempcode = '';
+
+        if ($cat == 'Employee') {
+            $fwd = $_POST["forward"];
+            $ofwd = $fwd;
+            $curempcode = $fwd;
+        } elseif ($cat == 'Officer') {
+            $ofwd = $ecode;
+            $afwd = $dbo->query("SELECT EMPCODE FROM user WHERE CATEGORY='Admin' LIMIT 1")->fetchColumn();
+            $curempcode = $afwd;
+        }
+
         $target_dir = "../uploads/";
-        $target_file = $target_dir.basename($_FILES["uploadedFile"]["name"]);
+        $target_file = $target_dir . basename($_FILES["uploadedFile"]["name"]);
         $uploadOk = 1;
         $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
 
-        // Allow certain file formats
         if (!empty($_FILES["uploadedFile"]["name"])) {
-            if ($imageFileType != "pdf" && $imageFileType != "jpg" && $imageFileType != "jpeg" && $imageFileType != "png") {
+            if (!in_array($imageFileType, ["pdf", "jpg", "jpeg", "png"])) {
                 echo "<script>alert('Sorry, only PDF, JPG, JPEG & PNG files are allowed.');</script>";
                 $uploadOk = 0;
-            }
-            else {
-                if (move_uploaded_file($_FILES["uploadedFile"]["tmp_name"], $target_file)){
-                    $db_user = $dbo->query("INSERT INTO complaints (ctype, sub, descr, empcode, compdate, status, uploadedFile, offempcode, admempcode, curempcode) 
-					VALUES ('$ctype', '$sub', '$descr', '$ecode', CURDATE(), 'Pending', '$target_file', '$ofwd', '$afwd','$fwd' )");
+            } else {
+                if (move_uploaded_file($_FILES["uploadedFile"]["tmp_name"], $target_file)) {
+                    $dbo->query("INSERT INTO complaints (ctype, sub, descr, empcode, compdate, status, uploadedFile, offempcode, admempcode, curempcode) 
+                        VALUES ('$ctype', '$sub', '$descr', '$ecode', CURDATE(), 'Pending', '$target_file', '$ofwd', '$afwd', '$curempcode')");
                 }
             }
+        } else {
+            $dbo->query("INSERT INTO complaints (ctype, sub, descr, empcode, compdate, status, offempcode, admempcode, curempcode) 
+                VALUES ('$ctype', '$sub', '$descr', '$ecode', CURDATE(), 'Pending', '$ofwd', '$afwd', '$curempcode')");
         }
-        else {
-            $db_user = $dbo->query("INSERT INTO complaints (ctype, sub, descr, empcode, compdate, status, offempcode, admempcode, curempcode) 
-			VALUES ('$ctype', '$sub', '$descr', '$ecode', CURDATE(), 'Pending', '$ofwd', '$afwd','$fwd')");
-        }
+
         echo "<script>alert('Complaint has been registered.');</script>";
     }
-    
 ?>
 
 <!DOCTYPE html>
@@ -74,16 +83,16 @@
 
                             <div class="input-group">
                                 <label for="subject">Subject </label>
-                                <input type="text" id="subject" name="subject" placeholder="Enter Complaint Subject" required />
+                                <input type="text" id="subject" name="subject"  maxlength="100" placeholder="Enter Complaint Subject" required />
                             </div>
 
                             <div class="input-group">
                                 <label for="descr">Description </label>
-                                <textarea id="descr" name="descr" rows="5" cols="40" placeholder="Describe your complaint here..."></textarea>
+                                <textarea id="descr" name="descr" maxlength="250" rows="5" cols="40" placeholder="Describe your complaint here..."></textarea>
                             </div>
 
                             <div class="input-group">
-                                <label for="file">Upload File</label>
+                                <label for="file">Upload File (Max 5MB)</label>
                                 <input type="file" id="uploadedFile" name="uploadedFile" class="upload-file" accept=".jpg, .jpeg, .png, .pdf" />
                             </div>
 

@@ -65,13 +65,13 @@
             $uploadedFile = $row['UPLOADEDFILE'];
             $status = $row['STATUS'];
             $currec = $row['CUREMPCODE'];
-
-            if($status == 'Pending'){
-                $currstatus='P';
-            }
-            else{
-                $currstatus='N';
-            }
+            $currstatus = (!in_array($status, ['Return to User', 'Rejected', 'Closed'])) ? 'P' : 'N';
+            // if($status == 'Pending'){
+            //     $currstatus='P';
+            // }
+            // else{
+            //     $currstatus='N';
+            // }
         } 
         else {
             echo "<script>alert('Complaint not found.');
@@ -101,7 +101,8 @@
                             <div class="cstatus-select-content">
                                 <a href="#" data-status="All">All</a>
                                 <a href="#" data-status="Pending">Pending</a>
-                                <a href="#" data-status="Rejected">Rejected</a>
+                                <a href="#" data-status="Rejected">Rejected by Admin</a>
+                                <a href="#" data-status="Rejected by Officer">Rejected by Officer</a>
                                 <a href="#" data-status="Return to User">Return to User</a>
                                 <a href="#" data-status="Closed">Closed</a>
                             </div>
@@ -141,7 +142,6 @@
                                                 else {
                                                     $cname = $dbo->query("SELECT EMPNAME FROM user WHERE empcode = '$curecode'")->fetchColumn();
                                                 }
-                                                    
                                                 if ($cbycode == $ecode){
                                                         $cbyname = 'Me';
                                                 } 
@@ -152,7 +152,7 @@
                                                 echo "<td>".htmlspecialchars($row['compid'])."</td>";
                                                 echo "<td>".htmlspecialchars($row['ctype'])."</td>";
                                                 echo "<td>".htmlspecialchars($cbyname)."</td>";
-                                                echo "<td>".htmlspecialchars($row['sub'])."</td>";
+                                                echo "<td style='word-wrap: break-word; overflow-wrap: break-word; white-space: normal; max-width: 200px;'>" . htmlspecialchars($row['sub']) . "</td>";
                                                 echo "<td class='complaint-status'>".htmlspecialchars($row['status'])."</td>";
                                                 echo "<td>".htmlspecialchars($cname)."</td>";
                                                 echo "<td><a href='officer-page.php?e=".htmlspecialchars($row['compid'])."'>View Details</a></td>";
@@ -181,30 +181,42 @@
                     </p>
                     <p><strong>Status:</strong> <?php echo htmlspecialchars($status); ?></p>
 
-                    <?php if(($currec == $ecode && trim($currstatus) === 'P' )|| ($status === 'Return to User') ){ ?>
+                    <?php if (($currec == $ecode && trim($currstatus) == 'P') || ($status === 'Return to User')) { ?>
                         <div class="input-group">
-                                <label for="oremarks">Officer Remarks: </label>                        
-                                <input type="text" id="oremarks" name="oremarks" placeholder="enter remarks" value="<?php echo htmlspecialchars($offrem); ?>"/>
+                            <label for="oremarks">Officer Remarks: </label>
+                            <input type="text" id="oremarks" name="oremarks" placeholder="Enter remarks" value="<?php echo htmlspecialchars($offrem); ?>" />
                         </div>
-                            
-                        <div class="input-group">
-                            <label for="ostatus">Update Status</label>
-                            <select id="ostatus" name="ostatus" required>
-                                <option value="" disabled selected>select status</option>
-                                <option value="RJ">Rejected</option>
-                                <option value="RU">Return to User</option>
-                                <option value="FA">Forward to Admin</option>
-                            </select>                            
-                        </div>
-                        
+
+                        <?php if (trim($status) === 'Return to User') { ?>
+                            <div class="input-group">
+                                <label for="ostatus">Update Status</label>
+                                <select id="ostatus" name="ostatus" required>
+                                    <option value="" disabled selected>Select status</option>
+                                    <option value="FA">Forward to Admin</option>
+                                </select>
+                            </div>
+                        <?php } 
+                        else { ?>
+                            <div class="input-group">
+                                <label for="ostatus">Update Status</label>
+                                <select id="ostatus" name="ostatus" required>
+                                    <option value="" disabled selected>Select status</option>
+                                    <option value="RJ">Rejected</option>
+                                    <option value="RU">Return to User</option>
+                                    <option value="FA">Forward to Admin</option>
+                                </select>
+                            </div>
+                        <?php } ?>
+
                         <div class="submit-btn">
                             <button type="submit" name="submitBtn">Submit</button>
                         </div>
                     <?php } 
-                    else{ ?>
+                    else { ?>
                         <p>Remarks can be found below.</p>
                     <?php } ?>
-                </div>
+                    </div>
+
 <!-- remarks history table -->
                         <div class="clist-container">
                             <table class="clist-table">

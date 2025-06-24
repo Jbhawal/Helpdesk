@@ -20,6 +20,7 @@
     $admrem = '';
     $ccode = '';
     $oename = '';
+    $cname = '';
     $currstatus = 'N'; // Default to 'N'(no special status action for employee)
     $initialFilter = isset($_GET['filter']) ? htmlspecialchars($_GET['filter']) : 'All';
 
@@ -37,11 +38,7 @@
             $status = $row['STATUS'];
             $oecode = $row['OFFEMPCODE'];
             $oename = $dbo->query("SELECT EMPNAME FROM user WHERE EMPCODE='$oecode'")->fetchColumn();
-            if($status == 'Pending'){
-                $currstatus = 'P'; 
-            } else{
-                $currstatus = 'N'; // Complaint is not pending(Closed, rejected, etc.)
-            }
+            $currstatus = (!in_array($status, ['Return to User', 'Rejected', 'Closed'])) ? 'P' : 'N';
         } 
         else{
             header("Location: view-status.php?filter={$initialFilter}");
@@ -98,7 +95,8 @@
                             <div class="cstatus-select-content">
                                 <a href="#" data-status="All">All</a>
                                 <a href="#" data-status="Pending">Pending</a>
-                                <a href="#" data-status="Rejected">Rejected</a>
+                                <a href="#" data-status="Rejected">Rejected by Admin</a>
+                                <a href="#" data-status="Rejected by Officer">Rejected by Officer</a>
                                 <a href="#" data-status="In Progress">In Progress</a>
                                 <a href="#" data-status="Return to User">Return to User</a>
                                 <a href="#" data-status="Closed">Closed</a>
@@ -133,14 +131,18 @@
                                                 $curecode = $row['curempcode'];
                                                 $offempcode = $row['offempcode'];
                                                 $admempcode = $row['admempcode'];
-                                                $cname = '';
+                                                $curstatus = $row['status'];
+                                               
                                                 if ($curecode == $offempcode){
                                                     $cname = $dbo->query("SELECT CATEGORY FROM user WHERE empcode = '$offempcode'")->fetchColumn();
                                                 } 
                                                 else if($curecode == $admempcode){
                                                     $cname = $dbo->query("SELECT EMPNAME FROM user WHERE empcode = '$admempcode'")->fetchColumn();
                                                 }
-                                                else if ($status!='Closed'){
+                                                else if ($curstatus=='Closed' || $curstatus=='Rejected by Officer' ){
+                                                    $cname=' ';
+                                                }
+                                                else{
                                                     $cname='Me';
                                                 }
 
@@ -173,7 +175,7 @@
 
                             <p><strong>File:</strong>
                                 <?php if(!empty($uploadedFile)): ?>
-                                    <a href="/uploads/<?php echo basename($uploadedFile); ?>" target="_blank">View Attached File</a>
+                                    <a href="../uploads/<?php echo basename($uploadedFile); ?>" target="_blank">View Attached File</a>
                                 <?php else: ?>
                                     No file uploaded.
                                 <?php endif; ?>
@@ -193,21 +195,8 @@
                                 <label for="file">Upload File</label>
                                 <input type="file" id="uploadedFile" name="uploadedFile" class="upload-file" accept=".jpg, .jpeg, .png, .pdf" />
                             </div>
-                            
-                            
-
+                    
                             <p><strong>Forward To:</strong> <?php echo htmlspecialchars($oename); ?></p>
-
-                                <!-- <div class="input-group">
-                                    <label for="forward">Forward To</label>
-                                    <select id="forward" name="forward" required>
-                                        <option value="" disabled selected>Select Officer</option>
-                                        
-                                            <option value="<?php echo $rowoff['EMPCODE']?>"><?php echo $rowoff['EMPNAME']?></option>
-                                            
-                                        
-                                    </select>
-                                </div> -->
 
                                 <div class="submit-btn">
                                     <button type="submit" name="submitBtn" id="submitBtn">Submit</button>
