@@ -32,7 +32,7 @@
     <body>           
         <!-- navbar+sidebar(from menu.php)+ main content  --> 
                 <?php include 'menu.php';?>
-                        <main class="officer-main"> 
+                        <main class="o-main"> 
                             <img style="height: 300px; width:auto; display: block; margin: 145px auto;" src="../images/helpdesk-image.jpg" alt="Employee Image">
                             
                         </main>

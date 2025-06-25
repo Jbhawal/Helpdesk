@@ -87,7 +87,7 @@
     </head>
     <body data-show-details="<?php echo isset($_GET['e']) ? 'true' : 'false'; ?>">
         <?php include 'menu.php'; ?>
-        <main class="officer-main">
+        <main class="o-main">
             <div class="cheading">
                 <h2>List of complaints</h2>
                 <div class="cstatus-select">

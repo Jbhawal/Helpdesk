@@ -12,7 +12,7 @@ html, body {
 
 /* MAIN CONTENT */
 .main-content,
-.officer-main {
+.o-main {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -23,11 +23,11 @@ html, body {
     /* margin-top: 20px; */
 }
 
-.officer-main {
+.o-main {
     justify-content: flex-start;
 }
 
-.officer-main h2 {
+.o-main h2 {
     margin: 20px auto 10px auto;
 }
 
@@ -393,4 +393,53 @@ html, body {
 
 .cstatus-select-content.show {
     display: block;
+}
+
+/* Dashboard styles */
+.summary-cards{
+    display: flex;
+    gap: 15px;
+    margin: 20px;
+    flex-wrap: wrap;
+}
+
+.card {
+    background: #d5e3ef;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border: #c7c6c6 1px solid;
+    justify-content: space-between;
+    min-width: 180px;
+    text-align: center;
+}
+
+.card h2 {
+    margin: 0 0 10px;
+    font-size: 21px;
+    color: #555;
+}
+
+.card p {
+    font-size: 18px;
+    font-weight: bold;
+    color: #222;
+    text-align: center;
+}
+
+.complaint-box{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.cbox-heading{
+    display: flex;
+    width: 100%;
+    margin: 10px 0;
+}
+
+.dashboard{
+    padding: 20px;
 }

@@ -38,38 +38,32 @@
     </nav>
 
     <div class="wrapper">
-        <?php
-        if($catg === 'Employee'){
-        ?>
-        <aside class="sidebar" id="sidebar">
-            <ul class="sidebar-menu">
-                <!-- <li><a href="dashboard.php" class="sidebar-link <?= $current === 'dashboard.php' ? 'active' : '' ?>">Dashboard</a></li> -->
-                <li><a href="employee-page.php" class="sidebar-link <?= $current === 'employee-page.php' ? 'active' : '' ?>">New Complaint</a></li>
-                <li><a href="view-status.php" class="sidebar-link <?= $current === 'view-status.php' ? 'active' : '' ?>">Show Status</a></li>
-                <li><a href="logout.php" class="sidebar-link <?= $current === 'logout.php' ? 'active' : '' ?>">Logout</a></li>
-            </ul>
-        </aside>
-        <?php
-        } 
-        else if($catg === 'Officer'){
-            ?>
-        <aside class="sidebar" id="sidebar">
-            <ul class="sidebar-menu">
-                <li><a href="officer-page.php" class="sidebar-link <?= $current === 'officer-page.php' ? 'active' : '' ?>">All Complaints</a></li>
-                <li><a href="employee-page.php" class="sidebar-link <?= $current === 'employee-page.php' ? 'active' : '' ?>">New Complaint</a></li>
-                <li><a href="logout.php" class="sidebar-link <?= $current === 'logout.php' ? 'active' : '' ?>">Logout</a></li>
-            </ul>
-        </aside>
-        <?php
-        } 
-        else if($catg === 'Admin'){
-        ?>
-        <aside class="sidebar" id="sidebar">
-            <ul class="sidebar-menu">
-                <li><a href="admin-page.php" class="sidebar-link <?= $current === 'admin-page.php' ? 'active' : '' ?>">All Complaints</a></li>
-                <li><a href="logout.php" class="sidebar-link <?= $current === 'logout.php' ? 'active' : '' ?>">Logout</a></li>
-            </ul>
-        </aside>
-        <?php       
-        }
-        ?>
+        <?php if($catg === 'Employee'){ ?>
+            <aside class="sidebar" id="sidebar">
+                <ul class="sidebar-menu">
+                    <li><a href="dashboard.php" class="sidebar-link <?= $current === 'dashboard.php' ? 'active' : '' ?>">Dashboard</a></li>
+                    <li><a href="employee-page.php" class="sidebar-link <?= $current === 'employee-page.php' ? 'active' : '' ?>">New Complaint</a></li>
+                    <li><a href="view-status.php" class="sidebar-link <?= $current === 'view-status.php' ? 'active' : '' ?>">Show Status</a></li>
+                    <li><a href="logout.php" class="sidebar-link <?= $current === 'logout.php' ? 'active' : '' ?>">Logout</a></li>
+                </ul>
+            </aside>
+        <?php } 
+        else if($catg === 'Officer'){ ?>
+            <aside class="sidebar" id="sidebar">
+                <ul class="sidebar-menu">
+                    <li><a href="dashboard.php" class="sidebar-link <?= $current === 'dashboard.php' ? 'active' : '' ?>">Dashboard</a></li>
+                    <li><a href="officer-page.php" class="sidebar-link <?= $current === 'officer-page.php' ? 'active' : '' ?>">All Complaints</a></li>
+                    <li><a href="employee-page.php" class="sidebar-link <?= $current === 'employee-page.php' ? 'active' : '' ?>">New Complaint</a></li>
+                    <li><a href="logout.php" class="sidebar-link <?= $current === 'logout.php' ? 'active' : '' ?>">Logout</a></li>
+                </ul>
+            </aside>
+        <?php } 
+        else if($catg === 'Admin'){ ?>
+            <aside class="sidebar" id="sidebar">
+                <ul class="sidebar-menu">
+                    <li><a href="dashboard.php" class="sidebar-link <?= $current === 'dashboard.php' ? 'active' : '' ?>">Dashboard</a></li>
+                    <li><a href="admin-page.php" class="sidebar-link <?= $current === 'admin-page.php' ? 'active' : '' ?>">All Complaints</a></li>
+                    <li><a href="logout.php" class="sidebar-link <?= $current === 'logout.php' ? 'active' : '' ?>">Logout</a></li>
+                </ul>
+            </aside>
+        <?php } ?>
