@@ -38,20 +38,36 @@
                     VALUES ('$ccode', '$ast', 'Admin', '$admrem', CURDATE())");
 
         if ($astatus == 'RU') {
-            $originalUser = $dbo->query("SELECT EMPCODE FROM complaints WHERE compid='$ccode'")->fetchColumn();
-            $dbo->query("UPDATE complaints SET CUREMPCODE=$originalUser WHERE compid='$ccode'");
+            $oecode = $dbo->query("SELECT EMPCODE FROM complaints WHERE compid='$ccode'")->fetchColumn();
+            $dbo->query("UPDATE complaints SET CUREMPCODE='$oecode' WHERE compid='$ccode'");
+
+            $email = $dbo->query("SELECT EMAIL FROM user WHERE EMPCODE = '$oecode'")->fetchColumn();
+            if ($email) {
+                $subject = "Complaint Returned to You";
+                $message = "Dear User,\n\nA complaint (ID: $ccode) has been returned to you for further action.\n\nRegards,\nHelpdesk";
+                $headers = "From: joyitabhawal@gmail.com";
+                mail($email, $subject, $message, $headers);
+            }
         }
         else if($astatus == 'IP'){
             $dbo->query("UPDATE complaints SET CUREMPCODE=$ecode WHERE compid='$ccode'");
+
+            $email = $dbo->query("SELECT EMAIL FROM user WHERE EMPCODE = '$ecode'")->fetchColumn();
+            if ($email) {
+                $subject = "Complaint In Progress";
+                $message = "Dear User,\n\nA complaint (ID: $ccode) has been taken in progress by you and needs further action.\n\nRegards,\nHelpdesk";
+                $headers = "From: joyitabhawal@gmail.com";
+
+                mail($email, $subject, $message, $headers);
+            }
         }
         else {
             $dbo->query("UPDATE complaints SET CUREMPCODE=NULL WHERE compid='$ccode'");
         }
-
-        echo "<script>
-                alert('Update successful.');
-                window.location.href = 'admin-page.php?filter={$originalFilter}';
-              </script>";
+        // echo "<script>
+        //         alert('Update successful.');
+        //         window.location.href = 'admin-page.php?filter={$originalFilter}';
+        //       </script>";
     }
 
     if (isset($_GET['e'])) {

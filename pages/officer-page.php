@@ -36,10 +36,28 @@
 		if (($ostatus == 'RJ') || ($ostatus == 'RU')) {
 			$oecode = $dbo->query("SELECT EMPCODE FROM complaints WHERE compid='$ccode'")->fetchColumn();
 			$db_user = $dbo->query("UPDATE complaints SET CUREMPCODE= '$oecode' WHERE compid='$ccode'");
+
+            $email = $dbo->query("SELECT EMAIL FROM user WHERE EMPCODE = '$oecode'")->fetchColumn();
+            if ($email) {
+                $subject = "Complaint Returned to You";
+                $message = "Dear User,\n\nA complaint (ID: $ccode) has been returned to you for further action.\n\nRegards,\nHelpdesk";
+                $headers = "From: joyitabhawal@gmail.com";
+                mail($email, $subject, $message, $headers);
+            }
 		}
 		else{	
 			$oecode = $dbo->query("SELECT MAX(EMPCODE) EC FROM user WHERE CATEGORY='Admin'")->fetchColumn();
 			$db_user = $dbo->query("UPDATE complaints SET ADMEMPCODE='$oecode', CUREMPCODE= '$oecode' WHERE compid='$ccode'");
+
+            $email = $dbo->query("SELECT EMAIL FROM user WHERE EMPCODE = '$oecode'")->fetchColumn();
+            if ($email) {
+                $subject = "New Complaint Assigned to You";
+                $message = "Dear Admin,\n\nA new complaint (ID: $ccode) has been forwarded to you for further action.\n\nPlease log in to view and respond.\n\nRegards,\nHelpdesk";
+                $headers = "From: joyitabhawal@gmail.com";
+
+                mail($email, $subject, $message, $headers);
+            }
+
 		}
 
         if ($oremarks <> '') {  //<> same as !=

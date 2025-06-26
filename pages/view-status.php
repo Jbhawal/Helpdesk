@@ -38,7 +38,24 @@
             $status = $row['STATUS'];
             $oecode = $row['OFFEMPCODE'];
             $oename = $dbo->query("SELECT EMPNAME FROM user WHERE EMPCODE='$oecode'")->fetchColumn();
-            $currstatus = (!in_array($status, ['Return to User', 'Rejected', 'Closed'])) ? 'P' : 'N';
+            $currstatus = (!in_array($status, ['Return to User', 'Rejected', 'Rejected by Officer', 'Closed'])) ? 'P' : 'N';
+
+            // Email logic
+            if (in_array($status, ['Return to User', 'Rejected', 'Rejected by Officer', 'Closed'])) {
+                $email = $dbo->query("SELECT EMAIL FROM user WHERE empcode = '$ecode'")->fetchColumn();
+                if ($email) {
+                    $subject = "Update on Your Complaint (ID: $ccode)";
+                    if ($status == 'Return to User') {
+                        $message = "Dear Employee,\n\nYour complaint (ID: $ccode) has been returned to you for further remarks or file upload.\n\nRegards,\nHelpdesk";
+                    } else if (str_contains(strtolower($status), 'rejected')) {
+                        $message = "Dear Employee,\n\nYour complaint (ID: $ccode) has been rejected. Please check the portal for details.\n\nRegards,\nHelpdesk";
+                    } else if ($status == 'Closed') {
+                        $message = "Dear Employee,\n\nYour complaint (ID: $ccode) has been resolved and marked as Closed.\n\nRegards,\nHelpdesk";
+                    }
+                    $headers = "From: joyitabhawal@gmail.com";
+                    mail($email, $subject, $message, $headers);
+                }
+            }
         } 
         else{
             header("Location: view-status.php?filter={$initialFilter}");
