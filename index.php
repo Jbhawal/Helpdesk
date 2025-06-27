@@ -59,7 +59,7 @@
                         <input type="password" id="password" name="password" placeholder="enter password" required />
                     </div>
                     <div class="login-btn">
-                        <button type="submit" name="loginBtn">Login</button>
+                        <button type="submit" name="loginBtn" style = "width: 95%;">Login</button>
                     </div>
                     <div class="switch-link">
                         <p>Don't have an account? <a href="pages/register.php" class="switch-btn">Register</a></p>

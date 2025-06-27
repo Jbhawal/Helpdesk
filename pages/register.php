@@ -146,7 +146,7 @@
                     </div>
 
                     <div class="register-btn">
-                        <button type="submit" name="registerBtn">Register</button>
+                        <button type="submit" name="registerBtn" style = "width: 95%;">Register</button>
                     </div>
                     
                     <div class="switch-link">

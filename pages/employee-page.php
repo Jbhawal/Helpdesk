@@ -137,7 +137,7 @@
                             </div>
 
                             <div class="submit-btn">
-                                <button type="submit" name="submitBtn" id="submitBtn">Submit</button>
+                                <button type="submit" name="submitBtn" id="submitBtn" style = "width: 95%;">Submit</button>
                             </div>
                         </form>
                     </div>
