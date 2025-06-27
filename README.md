@@ -1,20 +1,57 @@
 # 🛠️ Helpdesk Complaint Management System
 
-A web-based PHP application to streamline the process of submitting, managing, and tracking complaints in an organization. It supports multi-role access with features like complaint forwarding, remarking, and status tracking.
+The **Helpdesk** is a web-based PHP application working as a Complaint Management System designed to streamline the process of raising, tracking, and resolving complaints within an organization. It supports multiple user roles—such as employees, officers, and administrators—each with specific privileges to manage the complaint lifecycle efficiently. The system is built with a clean, a role-based access structure, and dynamic complaint tracking.
+- 👤 **Employees**
+  - Can file new complaints.
+  - Can view the status and history of their complaints.
+  - Can add remarks if the complaint is returned back to them.
 
+- 🕵️ **Officers**
+  - Can lodge complaints (same as employees).
+  - Can view and manage complaints assigned to them.
+  - Can return complaints with remarks or forward them to admin for further action.
+
+- 🛠️ **Admins**
+  - Have access to all system data.
+  - Can monitor, report on, and manage complaints.
+  - Cannot interfere with complaints that are still in employee or officer stages..
+
+It is ideal for institutions, departments, or workplaces aiming to reduce paperwork, improve transparency, and ensure timely resolutions to issues raised internally.
+
+---
+## 🔄 Complaint Flow
+
+1. **Lodging a Complaint**:
+   - Any logged-in **Employee** or **Officer** can lodge a new complaint through a dedicated form.
+   - The complaint is stored in the database with a default status *Pending*.
+
+2. **Initial Review**:
+   - The assigned **Officer** reviews the complaint.
+   - They can either **forward** it to the admin or **return** it to the submitter for additional remarks or directly reject it.
+
+3. **Returned Complaints**:
+   - If a complaint is returned, the submitter can **add remarks** and **resubmit** the complaint.
+   - This ensures clarity before it is escalated or resolved.
+
+4. **Resolution / Forwarding**:
+   - Officers can **forward** complaints for resolution.
+   - The complaint status is updated accordingly and visible to all relevant parties.
+
+5. **Admin Oversight**:
+   - The **Admin** has full access to view all complaints passed to them, their statuses, and work on them.
 ---
 
 ## 📌 Features
 
-- 🔐 **Authentication**: Employee login with secure sessions.
-- 📝 **Complaint Filing**: Users can lodge new complaints with subject and details.
+- 🔐 **Authentication**: User login with secure sessions.
+- 📝 **Complaint Filing**: Users can lodge new complaints with subject and description.
 - 📤 **Forwarding Workflow**: Officers/Admins can return complaints for clarification or forward them to the next level.
-- 💬 **Remarks System**: Employees can add remarks when complaints are returned.
+- 💬 **Remarks System**: Users can view past and add further remarks when they work on the complaints or are returned to them.
 - 📊 **Status Tracking**: View real-time complaint status and remarks history.
 - 📂 **Role-based Dashboard**:
   - **Employee**: File, track, and remark complaints.
-  - **Officer**: View, forward, or return complaints.
-  - **Admin**: Full access, reports, and complaint overview.
+  - **Officer**: View, file, forward, reject or return complaints.
+  - **Admin**: View, close, reject or return complaints.
 - 📱 **Responsive UI**: Sidebar toggle on mobile devices, always visible on larger screens.
 - ✨ **Wrapped Text Handling**: Long subjects are wrapped neatly to prevent layout breakage.
 
@@ -23,33 +60,43 @@ A web-based PHP application to streamline the process of submitting, managing, a
 ## 📁 Project Structure
 
 ```
-/helpdesk/
+helpdesk/                    #root folder
 │
-├── include/
-│   └── config.php           # Database connection and constants
+├── backups/                 # Backup files or older versions
 │
-├── login/
-│   ├── index.php            # Login form
-│   └── auth.php             # Login logic
+├── css/                     # Stylesheets for the UI
+│   └── styles.css           # Main stylesheet
 │
-├── employee/
-│   ├── dashboard.php        # Employee dashboard
-│   └── file_complaint.php   # Complaint form
+├── images/                  # Logos and images used
 │
-├── officer/
-│   └── officer_panel.php    # Officer complaint view and actions
+├── include/                 # Configuration and utility PHP files
+│   └── config.php           # Database connection and config settings
 │
-├── admin/
-│   └── admin_panel.php      # Admin-level access and complaint logs
+├── instr/                   # Project instructions (for my understanding)
 │
-├── assets/
-│   ├── css/                 # Stylesheets
-│   ├── js/                  # JavaScript (sidebar toggle, etc.)
-│   └── images/              # Icons and branding
+├── js/                      # JavaScript files for interactivity
+│   ├── script.js            
+│   └── validation.js        
 │
-├── menu.php                 # Common navbar + sidebar
-├── index.php                # Landing or redirection logic
-└── README.md                # Project documentation
+├── master/                  # Has master table
+│   ├── Master.csv                       
+│
+├── pages/                   # Core application pages grouped by functionality
+│   ├── admin-page.php       
+│   ├── dashboard.php   
+│   ├── employee-page.php    
+│   ├── logout.php           
+│   ├── menu.php             
+│   ├── officer-page.php     
+│   ├── register.php         
+│   ├── report.php           
+│   └── view-status.php
+│
+├── uploads/                 # Stored complaint file attachments
+│
+├── index.php                # Entry point or login redirect
+├── README.md                # Project documentation
+└── table creation.txt       # SQL schema or table structure notes
 ```
 
 ---
@@ -59,7 +106,6 @@ A web-based PHP application to streamline the process of submitting, managing, a
 - **Frontend**: HTML, CSS, JavaScript (Vanilla)
 - **Backend**: PHP (Core PHP, no frameworks)
 - **Database**: MySQL
-- **Libraries**: (Optional) jQuery, Bootstrap
 
 ---
 
@@ -67,7 +113,7 @@ A web-based PHP application to streamline the process of submitting, managing, a
 
 1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/yourusername/helpdesk.git
+   git clone https://github.com/Jbhawal/helpdesk.git
    ```
 
 2. **Import the Database**:
@@ -84,36 +130,18 @@ A web-based PHP application to streamline the process of submitting, managing, a
      ```
 
 4. **Run the App**:
-   - Place the project folder inside your local server’s `htdocs` directory (e.g., XAMPP).
-   - Open in browser:
+   - Place the project folder inside WAMP's `www` directory:
      ```
-     http://localhost/helpdesk/login/index.php
+     C:/wamp64/www/helpdesk/
+     ```
+   - Start WAMP and open your browser to:
+     ```
+     http://localhost/helpdesk/index.php
      ```
 
 ---
 
-## 📸 Screenshots
+## 📸 Screenshots 
 
-> _Add relevant screenshots like complaint form, officer dashboard, etc._
-
+- will be uploaded shortly
 ---
-
-## ✅ Future Improvements
-
-- 📥 File attachments for complaints  
-- 📧 Email notifications  
-- 📈 Complaint analytics and export options  
-- 🧪 Unit testing and advanced validation  
-- 🔔 Real-time notifications
-
----
-
-## 🤝 Contributors
-
-- **Joyita Bhawal** – Developer & Designer
-
----
-
-## 📝 License
-
-This project is licensed under the [MIT License](LICENSE).
