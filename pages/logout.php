@@ -1,14 +1,11 @@
 <?php
-    session_start();
-
-    if(!isset($_SESSION['ecode'])){
-        header("Location: ../index.php");
-    }
-    else if(isset($_SESSION['ecode'])!=""){
-        header("Location: ../index.php");
-    }
-    
+session_start();
+// Destroy session if user is logged in
+if (isset($_SESSION['ecode'])) {
     session_destroy();
     unset($_SESSION['ecode']);
-    header("Location: ../index.php");
+}
+// Redirect to login
+header("Location: ../index.php");
+exit();
 ?>

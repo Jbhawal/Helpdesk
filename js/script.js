@@ -92,3 +92,23 @@ document.addEventListener('DOMContentLoaded', function(){
         }
     });
 });
+
+//Buffering
+document.addEventListener('DOMContentLoaded', function() {
+    const loadingOverlay = document.getElementById('universalLoadingOverlay');
+
+    if (loadingOverlay) {
+        const allForms = document.querySelectorAll('form');
+        allForms.forEach(form => {
+            form.addEventListener('submit', function(event) {
+                loadingOverlay.classList.add('show');
+                
+                // Disable all submit buttons in the form to prevent double-clicks
+                const submitButtons = form.querySelectorAll('button[type="submit"], input[type="submit"]');
+                submitButtons.forEach(button => {
+                    button.disabled = true;
+                });
+            });
+        });
+    }
+});

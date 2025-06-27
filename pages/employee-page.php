@@ -2,7 +2,7 @@
     include_once '../include/config.php';
     session_start();
 
-    if (!isset($_SESSION['empcode'])) {
+    if(!isset($_SESSION['empcode'])){
         header("Location: ../index.php");
         exit();
     }
@@ -11,20 +11,19 @@
     $cat = $dbo->query("SELECT CATEGORY FROM user WHERE empcode = '$ecode'")->fetchColumn();
     $oquery = "SELECT EMPCODE, EMPNAME FROM user WHERE CATEGORY='Officer' ORDER BY EMPNAME";
 
-    if (isset($_POST['submitBtn'])) {
+    if(isset($_POST['submitBtn'])){
         $ctype = $_POST["ctype"];
         $sub = $_POST["subject"];
         $descr = $_POST["descr"];
-
         $ofwd = '';
         $afwd = '';
         $curempcode = '';
 
-        if ($cat == 'Employee') {
+        if($cat == 'Employee'){
             $fwd = $_POST["forward"];
             $ofwd = $fwd;
             $curempcode = $fwd;
-        } elseif ($cat == 'Officer') {
+        } elseif($cat == 'Officer'){
             $ofwd = $ecode;
             $afwd = $dbo->query("SELECT EMPCODE FROM user WHERE CATEGORY='Admin' LIMIT 1")->fetchColumn();
             $curempcode = $afwd;
@@ -35,21 +34,37 @@
         $uploadOk = 1;
         $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
 
-        if (!empty($_FILES["uploadedFile"]["name"])) {
-            if (!in_array($imageFileType, ["pdf", "jpg", "jpeg", "png"])) {
+        if(!empty($_FILES["uploadedFile"]["name"])){
+            if(!in_array($imageFileType, ["pdf", "jpg", "jpeg", "png"])){
                 echo "<script>alert('Sorry, only PDF, JPG, JPEG & PNG files are allowed.');</script>";
                 $uploadOk = 0;
-            } else {
-                if (move_uploaded_file($_FILES["uploadedFile"]["tmp_name"], $target_file)) {
+            } 
+            else{
+                if(move_uploaded_file($_FILES["uploadedFile"]["tmp_name"], $target_file)){
                     $dbo->query("INSERT INTO complaints (ctype, sub, descr, empcode, compdate, status, uploadedFile, offempcode, admempcode, curempcode) 
                         VALUES ('$ctype', '$sub', '$descr', '$ecode', CURDATE(), 'Pending', '$target_file', '$ofwd', '$afwd', '$curempcode')");
+                    $email = $dbo->query("SELECT EMAIL FROM user WHERE EMPCODE = '$ofwd'")->fetchColumn();
+                    if($email){
+                        $subject = "Received a Complaint";
+                        $message = "Dear Officer,\n\nYou have received a new complaint. Please login to your account for further action.\n\nRegards,\nHelpdesk";
+                        $headers = "From: joyitabhawal@gmail.com";
+                        mail($email, $subject, $message, $headers);
+                    }
+                    
                 }
             }
-        } else {
+        } 
+        else{
             $dbo->query("INSERT INTO complaints (ctype, sub, descr, empcode, compdate, status, offempcode, admempcode, curempcode) 
                 VALUES ('$ctype', '$sub', '$descr', '$ecode', CURDATE(), 'Pending', '$ofwd', '$afwd', '$curempcode')");
+            $email = $dbo->query("SELECT EMAIL FROM user WHERE EMPCODE = '$ofwd'")->fetchColumn();
+                if($email){
+                    $subject = "Received a Complaint";
+                    $message = "Dear Officer,\n\nYou have received a new complaint. Please login to your account for further action.\n\nRegards,\nHelpdesk";
+                    $headers = "From: joyitabhawal@gmail.com";
+                    mail($email, $subject, $message, $headers);
+                }
         }
-
         echo "<script>alert('Complaint has been registered.');</script>";
     }
 ?>
@@ -133,5 +148,9 @@
         <!-- Overlay for small screen dark background -->
         <div class="overlay" id="overlay"></div>
         <script src="../js/script.js"></script>
+        <div id="universalLoadingOverlay" class="loading-overlay">
+            <div class="spinner"></div>
+            <p>Loading...</p>
+        </div>
     </body>
 </html>

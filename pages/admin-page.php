@@ -2,7 +2,7 @@
     include_once '../include/config.php';
     session_start();
 
-    if (!isset($_SESSION['empcode'])) {
+    if(!isset($_SESSION['empcode'])){
         header("Location: ../index.php");
         exit();
     }
@@ -22,29 +22,29 @@
     $admrem  = '';
     $curecode = '';
 
-    if (isset($_POST['submitBtn'])) {
+    if(isset($_POST['submitBtn'])){
         $admrem = trim($_POST["admremarks"]);
         $ccode  = trim($_POST["cccode"]);
         $astatus = trim($_POST["astatus"]);
         $originalFilter = trim($_POST["originalFilter"]);
 
-        if ($astatus == 'RU') $ast = 'Return to User';
-        if ($astatus == 'IP') $ast = 'In Progress';
-        if ($astatus == 'CL') $ast = 'Closed';
-        if ($astatus == 'RJ') $ast = 'Rejected';
+        if($astatus == 'RU') $ast = 'Return to User';
+        if($astatus == 'IP') $ast = 'In Progress';
+        if($astatus == 'CL') $ast = 'Closed';
+        if($astatus == 'RJ') $ast = 'Rejected';
 
         $dbo->query("UPDATE complaints SET status='$ast' WHERE compid='$ccode'");
         $dbo->query("INSERT INTO history (COMPID, FORSTATUS, CATEGORY, REMARKS, REMDATE) 
                     VALUES ('$ccode', '$ast', 'Admin', '$admrem', CURDATE())");
 
-        if ($astatus == 'RU') {
+        if($astatus == 'RU'){
             $oecode = $dbo->query("SELECT EMPCODE FROM complaints WHERE compid='$ccode'")->fetchColumn();
             $dbo->query("UPDATE complaints SET CUREMPCODE='$oecode' WHERE compid='$ccode'");
 
             $email = $dbo->query("SELECT EMAIL FROM user WHERE EMPCODE = '$oecode'")->fetchColumn();
-            if ($email) {
+            if($email){
                 $subject = "Complaint Returned to You";
-                $message = "Dear User,\n\nA complaint (ID: $ccode) has been returned to you for further action.\n\nRegards,\nHelpdesk";
+                $message = "Dear User,\n\nYour complaint with ID: $ccode has been returned to you.\nPlease login to view and respond.\n\nRegards,\nHelpdesk";
                 $headers = "From: joyitabhawal@gmail.com";
                 mail($email, $subject, $message, $headers);
             }
@@ -53,28 +53,48 @@
             $dbo->query("UPDATE complaints SET CUREMPCODE=$ecode WHERE compid='$ccode'");
 
             $email = $dbo->query("SELECT EMAIL FROM user WHERE EMPCODE = '$ecode'")->fetchColumn();
-            if ($email) {
+            if($email){
                 $subject = "Complaint In Progress";
                 $message = "Dear User,\n\nA complaint (ID: $ccode) has been taken in progress by you and needs further action.\n\nRegards,\nHelpdesk";
                 $headers = "From: joyitabhawal@gmail.com";
-
                 mail($email, $subject, $message, $headers);
             }
         }
-        else {
+        else{
             $dbo->query("UPDATE complaints SET CUREMPCODE=NULL WHERE compid='$ccode'");
+            if($astatus == 'CL'){
+                $oecode = $dbo->query("SELECT EMPCODE FROM complaints WHERE compid='$ccode'")->fetchColumn();
+                $email = $dbo->query("SELECT EMAIL FROM user WHERE EMPCODE = '$oecode'")->fetchColumn();
+                if($email){
+                    $subject = "Complaint Closed";
+                    $message = "Dear User,\n\nYour complaint with ID: $ccode has been closed.\n Please login to view update.\n\nRegards,\nHelpdesk";
+                    $headers = "From: joyitabhawal@gmail.com";
+                    mail($email, $subject, $message, $headers);
+                }
+            }
+            else if($astatus == 'RJ'){
+            $oecode = $dbo->query("SELECT EMPCODE FROM complaints WHERE compid='$ccode'")->fetchColumn();
+
+            $email = $dbo->query("SELECT EMAIL FROM user WHERE EMPCODE = '$oecode'")->fetchColumn();
+            if($email){
+                $subject = "Complaint Rejected";
+                $message = "Dear User,\n\nYour complaint with ID: $ccode has been rejected.\nPlease login to view remarks.\n\nRegards,\nHelpdesk";
+                $headers = "From: joyitabhawal@gmail.com";
+                mail($email, $subject, $message, $headers);
+            }
         }
-        // echo "<script>
-        //         alert('Update successful.');
-        //         window.location.href = 'admin-page.php?filter={$originalFilter}';
-        //       </script>";
+        }
+        echo "<script>
+                alert('Update successful.');
+                window.location.href = 'admin-page.php?filter={$originalFilter}';
+              </script>";
     }
 
-    if (isset($_GET['e'])) {
+    if(isset($_GET['e'])){
         $ccode = $_GET['e'];
         $list = $dbo->query("SELECT COMPID, CTYPE, SUB, DESCR, UPLOADEDFILE, STATUS, CUREMPCODE FROM complaints WHERE compid = '$ccode'");
         $row = $list->fetch(PDO::FETCH_ASSOC);
-        if ($row) {
+        if($row){
             $compid = $row['COMPID'];
             $ctype = $row['CTYPE'];
             $sub = $row['SUB'];
@@ -82,8 +102,9 @@
             $uploadedFile = $row['UPLOADEDFILE'];
             $status = $row['STATUS'];
             $curecode = $row['CUREMPCODE'];
-            $currstatus = (!in_array($status, ['Return to User', 'Rejected', 'Closed'])) ? 'P' : 'N';
-        } else {
+            $currstatus = (!in_array($status, ['Return to User', 'Rejected', 'Rejected by Officer', 'Closed'])) ? 'P' : 'N';
+        } 
+        else{
             echo "<script>alert('Complaint not found.');
             window.location.href = 'adminPg.php';</script>";
             exit();
@@ -136,14 +157,14 @@
                         </thead>
                         <tbody>
                             <?php
-                            $whereClause = " WHERE ADMEMPCODE='$ecode'";
-                            if ($initialFilter !== 'All') {
+                            $whereClause = " WHERE ADMEMPCODE='$ecode' AND status NOT IN ('Rejected by Officer')";
+                            if($initialFilter !== 'All'){
                                 $whereClause .= " AND status = '$initialFilter'";
                             }
 
                             $results = $dbo->query("SELECT compid, ctype, sub, status, empcode, curempcode FROM complaints{$whereClause}");
-                            if ($results) {
-                                while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
+                            if($results){
+                                while ($row = $results->fetch(PDO::FETCH_ASSOC)){
                                     $curecode = $row['curempcode'];
                                     $cbycode = $row['empcode'];
 
@@ -177,7 +198,7 @@
                     <p><strong>Subject:</strong> <?php echo htmlspecialchars($sub); ?></p>
                     <p><strong>Description:</strong> <?php echo htmlspecialchars($descr); ?></p>
                     <p><strong>File:</strong>
-                        <?php if (!empty($uploadedFile)): ?>
+                        <?php if(!empty($uploadedFile)): ?>
                             <a href='<?php echo htmlspecialchars($uploadedFile); ?>' target="_blank" rel="noopener noreferrer">View Attached File</a>
                         <?php else: ?>
                             No file uploaded.
@@ -187,7 +208,7 @@
 
 
                     <div class="input-group">
-                        <?php if ($currstatus == 'P'): ?>
+                        <?php if($currstatus == 'P'): ?>
                         <label for="admremarks">Admin Remarks: </label>
                             <input type="text" id="admremarks" name="admremarks" placeholder="Enter remarks" value="<?php echo htmlspecialchars($admrem); ?>"/>
                         <?php else: ?>
@@ -195,7 +216,7 @@
                         <?php endif; ?>
                     </div>
 
-                    <?php if ($currstatus == 'P'): ?>
+                    <?php if($currstatus == 'P'): ?>
                         <div class="input-group">
                             <label for="astatus">Update Status</label>
                             <select id="astatus" name="astatus" required>
@@ -207,7 +228,11 @@
                             </select>
                         </div>
                         <div class="submit-btn">
-                            <button type="submit" name="submitBtn">Submit</button>
+                            <button type="submit" name="submitBtn">
+                                <span class="spinner" id="registerSpinner" style="display: none;"></span>
+                                <span id="registerText">Submit</span>
+                            </button>
+                                <!-- Submit</button> -->
                         </div>
                     <?php endif; ?>
                 </div>
@@ -228,8 +253,8 @@
                             <?php
                             
                                 $results = $dbo->query("SELECT FORSTATUS, CATEGORY, REMARKS, REMDATE FROM history WHERE COMPID='$ccode' ORDER BY ROWID");
-                                if ($results) { 
-                                    while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
+                                if($results){ 
+                                    while ($row = $results->fetch(PDO::FETCH_ASSOC)){
                                         $hforstatus = $row['FORSTATUS'];
                                         $hcatg = $row['CATEGORY'];
                                         $hrem = $row['REMARKS'];
@@ -252,6 +277,10 @@
         </main>
 
         <div id="overlay" class="overlay"></div>
-    <script src="../js/script.js"></script>   
+        <script src="../js/script.js"></script>   
+        <div id="universalLoadingOverlay" class="loading-overlay">
+            <div class="spinner"></div>
+            <p>Loading...</p>
+        </div>
     </body>
 </html>

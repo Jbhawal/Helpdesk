@@ -38,24 +38,7 @@
             $status = $row['STATUS'];
             $oecode = $row['OFFEMPCODE'];
             $oename = $dbo->query("SELECT EMPNAME FROM user WHERE EMPCODE='$oecode'")->fetchColumn();
-            $currstatus = (!in_array($status, ['Return to User', 'Rejected', 'Rejected by Officer', 'Closed'])) ? 'P' : 'N';
-
-            // Email logic
-            if (in_array($status, ['Return to User', 'Rejected', 'Rejected by Officer', 'Closed'])) {
-                $email = $dbo->query("SELECT EMAIL FROM user WHERE empcode = '$ecode'")->fetchColumn();
-                if ($email) {
-                    $subject = "Update on Your Complaint (ID: $ccode)";
-                    if ($status == 'Return to User') {
-                        $message = "Dear Employee,\n\nYour complaint (ID: $ccode) has been returned to you for further remarks or file upload.\n\nRegards,\nHelpdesk";
-                    } else if (str_contains(strtolower($status), 'rejected')) {
-                        $message = "Dear Employee,\n\nYour complaint (ID: $ccode) has been rejected. Please check the portal for details.\n\nRegards,\nHelpdesk";
-                    } else if ($status == 'Closed') {
-                        $message = "Dear Employee,\n\nYour complaint (ID: $ccode) has been resolved and marked as Closed.\n\nRegards,\nHelpdesk";
-                    }
-                    $headers = "From: joyitabhawal@gmail.com";
-                    mail($email, $subject, $message, $headers);
-                }
-            }
+            $currstatus = (!in_array($status, ['Return to User', 'Rejected', 'Rejected by Officer', 'Closed'])) ? 'P' : 'N';   
         } 
         else{
             header("Location: view-status.php?filter={$initialFilter}");
@@ -63,7 +46,7 @@
         }
     }
 
-    if (isset($_POST['submitBtn'])) {
+    if(isset($_POST['submitBtn'])){
         $eremarks = trim($_POST["eremarks"]);
         $ccode = $_POST["cccode"];
         $oecode = $dbo->query("SELECT offempcode FROM complaints WHERE compid='$ccode'")->fetchColumn();
@@ -72,16 +55,16 @@
                     VALUES ('$ccode', 'Pending', 'Employee', '$eremarks', CURDATE())");
         $dbo->query("UPDATE complaints SET STATUS='Pending', CUREMPCODE='$oecode' WHERE compid='$ccode'");
 
-        if (!empty($_FILES["uploadedFile"]["name"])) {
+        if(!empty($_FILES["uploadedFile"]["name"])){
             $target_dir = "../uploads/";
             $target_file = $target_dir . basename($_FILES["uploadedFile"]["name"]);
             $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
 
-            if (!in_array($imageFileType, ['pdf', 'jpg', 'jpeg', 'png'])) {
+            if(!in_array($imageFileType, ['pdf', 'jpg', 'jpeg', 'png'])){
                 echo "<script>alert('Only PDF, JPG, JPEG & PNG files are allowed.');</script>";
             }
             else{
-                if (move_uploaded_file($_FILES["uploadedFile"]["tmp_name"], $target_file)) {
+                if(move_uploaded_file($_FILES["uploadedFile"]["tmp_name"], $target_file)){
                     $dbo->query("UPDATE complaints SET uploadedFile='$target_file' WHERE compid='$ccode'");
                 }
             }
@@ -143,20 +126,20 @@
                                         $whereClause .= " AND status = '$initialFilter'";
                                     }
                                     $results = $dbo->query("SELECT compid, ctype, sub, status, empcode, offempcode, admempcode, curempcode FROM complaints{$whereClause}");
-                                        if ($results) { 
-                                            while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
+                                        if($results){ 
+                                            while ($row = $results->fetch(PDO::FETCH_ASSOC)){
                                                 $curecode = $row['curempcode'];
                                                 $offempcode = $row['offempcode'];
                                                 $admempcode = $row['admempcode'];
                                                 $curstatus = $row['status'];
                                                
-                                                if ($curecode == $offempcode){
+                                                if($curecode == $offempcode){
                                                     $cname = $dbo->query("SELECT CATEGORY FROM user WHERE empcode = '$offempcode'")->fetchColumn();
                                                 } 
                                                 else if($curecode == $admempcode){
                                                     $cname = $dbo->query("SELECT EMPNAME FROM user WHERE empcode = '$admempcode'")->fetchColumn();
                                                 }
-                                                else if ($curstatus=='Closed' || $curstatus=='Rejected by Officer' ){
+                                                else if($curstatus=='Closed' || $curstatus=='Rejected by Officer' ){
                                                     $cname=' ';
                                                 }
                                                 else{
@@ -239,8 +222,8 @@
                                     <?php
                                     
                                         $results = $dbo->query("SELECT FORSTATUS, CATEGORY, REMARKS, REMDATE FROM history WHERE COMPID='$ccode' ORDER BY ROWID");
-                                        if ($results) { 
-                                            while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
+                                        if($results){ 
+                                            while ($row = $results->fetch(PDO::FETCH_ASSOC)){
                                                 $hforstatus = $row['FORSTATUS'];
                                                 $hcatg = $row['CATEGORY'];
                                                 $hrem = $row['REMARKS'];
@@ -265,5 +248,9 @@
         </div> <!--closes page-container (from menu.php) -->
         <div id="overlay" class="overlay"></div>
         <script src="../js/script.js"></script>
+        <div id="universalLoadingOverlay" class="loading-overlay">
+            <div class="spinner"></div>
+            <p>Loading...</p>
+        </div>
     </body>
 </html>

@@ -2,7 +2,7 @@
     include_once '../include/config.php';
     session_start();
 
-    if (!isset($_SESSION['empcode'])) {
+    if(!isset($_SESSION['empcode'])){
         header("Location: ../index.php");
         exit();
     }
@@ -167,6 +167,9 @@
     <!-- Overlay for small screen dark background -->
     <div class="overlay" id="overlay"></div>
     <script src="../js/script.js"></script>
-    
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <p>Working on it...</p>
+    </div>
 </body>
 </html>

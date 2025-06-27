@@ -1,7 +1,7 @@
 <!-- this is the first screen employee sees on login -->
 
 <?php
-    if (session_status() === PHP_SESSION_NONE) {
+    if(session_status() === PHP_SESSION_NONE){
         session_start();
     }
 
@@ -42,6 +42,10 @@
         <!-- Overlay for small screen dark background -->
         <div class="overlay" id="overlay"></div>
         <script src="../js/script.js"></script>
+        <div id="loadingOverlay" class="loading-overlay">
+            <div class="spinner"></div>
+            <p>Working on it...</p>
+        </div>
     </body>
 </html>
 

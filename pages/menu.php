@@ -44,7 +44,7 @@
                     <li><a href="dashboard.php" class="sidebar-link <?= $current === 'dashboard.php' ? 'active' : '' ?>">Dashboard</a></li>
                     <li><a href="employee-page.php" class="sidebar-link <?= $current === 'employee-page.php' ? 'active' : '' ?>">New Complaint</a></li>
                     <li><a href="view-status.php" class="sidebar-link <?= $current === 'view-status.php' ? 'active' : '' ?>">Show Status</a></li>
-                    <li><a href="logout.php" class="sidebar-link <?= $current === 'logout.php' ? 'active' : '' ?>">Logout</a></li>
+                    <li><a href="logout.php" onclick="return confirm('Are you sure you want to logout?')" class="sidebar-link <?= $current === 'logout.php' ? 'active' : '' ?>">Logout</a></li>
                 </ul>
             </aside>
         <?php } 
@@ -54,7 +54,7 @@
                     <li><a href="dashboard.php" class="sidebar-link <?= $current === 'dashboard.php' ? 'active' : '' ?>">Dashboard</a></li>
                     <li><a href="officer-page.php" class="sidebar-link <?= $current === 'officer-page.php' ? 'active' : '' ?>">All Complaints</a></li>
                     <li><a href="employee-page.php" class="sidebar-link <?= $current === 'employee-page.php' ? 'active' : '' ?>">New Complaint</a></li>
-                    <li><a href="logout.php" class="sidebar-link <?= $current === 'logout.php' ? 'active' : '' ?>">Logout</a></li>
+                    <li><a href="logout.php" onclick="return confirm('Are you sure you want to logout?')" class="sidebar-link <?= $current === 'logout.php' ? 'active' : '' ?>">Logout</a></li>
                 </ul>
             </aside>
         <?php } 
@@ -63,7 +63,8 @@
                 <ul class="sidebar-menu">
                     <li><a href="dashboard.php" class="sidebar-link <?= $current === 'dashboard.php' ? 'active' : '' ?>">Dashboard</a></li>
                     <li><a href="admin-page.php" class="sidebar-link <?= $current === 'admin-page.php' ? 'active' : '' ?>">All Complaints</a></li>
-                    <li><a href="logout.php" class="sidebar-link <?= $current === 'logout.php' ? 'active' : '' ?>">Logout</a></li>
+                    <li><a href="logout.php" onclick="return confirm('Are you sure you want to logout?')" class="sidebar-link <?= $current === 'logout.php' ? 'active' : '' ?>">Logout</a></li>
+
                 </ul>
             </aside>
         <?php } ?>

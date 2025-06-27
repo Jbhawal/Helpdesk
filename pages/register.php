@@ -24,6 +24,13 @@
             }
             else{
                 $db_user = $dbo->query("INSERT INTO user (empcode, empname, email, phnno, pwd, desg, sec, category, dept) VALUES ('$ecode', '$ename', '$email', '$phn', '$pwd', '$desg', '$sec', '$cat', '$dept')");
+                $emailto = $dbo->query("SELECT EMAIL FROM user WHERE EMPCODE = '$ecode'")->fetchColumn();
+                if ($emailto) {
+                    $subject = "Registration successful.";
+                    $message = "Dear $ename,\n\nThank you for registering with us!\nYou can now log in and file complaints through our system.\n\nRegards,\nHelpdesk";
+                    $headers = "From: joyitabhawal@gmail.com";
+                    mail($emailto, $subject, $message, $headers);
+                }
                 echo "<script>
                     alert('Registration successful. Login again.');
                     window.location.href = '../index.php';
@@ -149,5 +156,29 @@
             </div>
         </main>
         <script src="../js/validation.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const loadingOverlay = document.getElementById('universalLoadingOverlay');
+
+                if (loadingOverlay) {
+                    const allForms = document.querySelectorAll('form');
+                    allForms.forEach(form => {
+                        form.addEventListener('submit', function(event) {
+                            loadingOverlay.classList.add('show');
+                            
+                            // Disable all submit buttons in the form to prevent double-clicks
+                            const submitButtons = form.querySelectorAll('button[type="submit"], input[type="submit"]');
+                            submitButtons.forEach(button => {
+                                button.disabled = true;
+                            });
+                        });
+                    });
+                }
+            });
+        </script>
+        <div id="universalLoadingOverlay" class="loading-overlay">
+            <div class="spinner"></div>
+            <p>Loading...</p>
+        </div>
     </body>
 </html>
