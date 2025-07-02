@@ -53,29 +53,29 @@
                 <div class="summary-cards">
                     <?php if($usercat == 'Employee'){ ?>
                         <div class="complaint-box">
-                            <div class="card">  
+                            <div class="card" onclick="window.location.href='view-status.php?&filter=All'">  
                                 <h2>Total Lodged</h2>
                                 <p><?php echo $totalLodge ?></p>
                             </div>
-                            <div class="card">
+                            <div class="card" onclick="window.location.href='view-status.php?&filter=Pending'">
                                 <h2>Current Pending</h2>
                                 <p><?php echo $pending ?></p>
                             </div>
-                            <div class="card">
+                            <div class="card" onclick="window.location.href='view-status.php?&filter=In+Progres'">
                                 <h2>In Progress</h2>
                                 <p><?php echo $inProgress ?></p>
                             </div>
-                            <div class="card">
+                            <div class="card" onclick="window.location.href='view-status.php?&filter=Return+to+User'">
                                 <h2>Returned Back</h2>
                                 <p><?php echo $returned ?></p>
                             </div>
-                            <div class="card">
+                            <div class="card" onclick="window.location.href='view-status.php?&filter=Closed'">
                                 <h2>Closed</h2>
                                 <p><?php echo $closed ?></p>
                             </div>
-                            <div class="card">
+                            <div class="card" onclick="window.location.href='view-status.php?&filter=RejectedAll'">
                                 <h2>Rejected</h2>
-                                <p><?php echo $rejectedE  ?></p>
+                                <p><?php echo $rejectedE ?></p>
                             </div>
                         </div>
                     <?php }
@@ -84,27 +84,27 @@
                             <h3>Complaints By Me</h3>
                         </div>
                         <div class="complaint-box">
-                            <div class="card">  
+                            <div class="card" onclick="window.location.href='officer-page.php?view=my'">  
                                 <h2>Total Lodged</h2>
                                 <p><?php echo $totalLodge ?></p>
                             </div>
-                            <div class="card">
+                            <div class="card" onclick="window.location.href='officer-page.php?&filter=Pending'">
                                 <h2>Current Pending</h2>
                                 <p><?php echo $pending ?></p>
                             </div>
-                            <div class="card">
+                            <div class="card" onclick="window.location.href='officer-page.php?&filter=All'">
                                 <h2>In Progress</h2>
                                 <p><?php echo $inProgress ?></p>
                             </div>
-                            <div class="card">
+                            <div class="card" onclick="window.location.href='officer-page.php?&filter=All'">
                                 <h2>Returned Back</h2>
                                 <p><?php echo $returned ?></p>
                             </div>
-                            <div class="card">
+                            <div class="card" onclick="window.location.href='officer-page.php?&filter=All'">
                                 <h2>Closed</h2>
                                 <p><?php echo $closed ?></p>
                             </div>
-                            <div class="card">
+                            <div class="card" onclick="window.location.href='officer-page.php?&filter=All'">
                                 <h2>Rejected</h2>
                                 <p><?php echo $rejected ?></p>
                             </div>
@@ -113,19 +113,19 @@
                             <div class="cbox-heading">
                                 <h3>Complaints By Users</h3>
                             </div>
-                            <div class="card">  
+                            <div class="card" onclick="window.location.href='officer-page.php?view=received'">  
                                 <h2>Total Received</h2>
                                 <p><?php echo $totalORcv ?></p>
                             </div>
-                            <div class="card">
+                            <div class="card" onclick="window.location.href='officer-page.php?&filter=All'">
                                 <h2>Current Pending</h2>
                                 <p><?php echo $pendingbyO ?></p>
                             </div>
-                            <div class="card">
+                            <div class="card" onclick="window.location.href='officer-page.php?&filter=All'">
                                 <h2>Returned Back</h2>
                                 <p><?php echo $returnedbyO ?></p>
                             </div>
-                            <div class="card">
+                            <div class="card" onclick="window.location.href='officer-page.php?&filter=All'">
                                 <h2>Rejected</h2>
                                 <p><?php echo $rejectedbyO ?></p>
                             </div>
@@ -134,27 +134,27 @@
 
                     <?php }
                     else if($usercat == 'Admin'){ ?> 
-                        <div class="card">  
+                        <div class="card" onclick="window.location.href='admin-page.php?&filter=All' ";>  
                             <h2>Total Received</h2>
                             <p><?php echo $totalARcv ?></p>
                         </div>
-                        <div class="card">
+                        <div class="card" onclick="window.location.href='admin-page.php?&filter=Pending' ";>
                             <h2>Current Pending</h2>
                             <p><?php echo $pendingbyA ?></p>
                         </div>
-                        <div class="card">
+                        <div class="card" onclick="window.location.href='admin-page.php?&filter=In+Progress' ";>
                             <h2>In Progress</h2>
                             <p><?php echo $inProgressbyA ?></p>
                         </div>
-                        <div class="card">
+                        <div class="card" onclick="window.location.href='admin-page.php?&filter=Return+to+User' ";>
                             <h2>Returned</h2>
                             <p><?php echo $returnedbyA ?></p>
                         </div>
-                        <div class="card">
+                        <div class="card" onclick="window.location.href='admin-page.php?&filter=Closed' ";>
                             <h2>Closed</h2>
                             <p><?php echo $closedbyA ?></p>
                         </div>
-                        <div class="card">
+                        <div class="card" onclick="window.location.href='admin-page.php?&filter=Rejected' ";>
                             <h2>Rejected</h2>
                             <p><?php echo $rejectedbyA ?></p>
                         </div>

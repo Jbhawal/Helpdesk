@@ -38,7 +38,7 @@
             $status = $row['STATUS'];
             $oecode = $row['OFFEMPCODE'];
             $oename = $dbo->query("SELECT EMPNAME FROM user WHERE EMPCODE='$oecode'")->fetchColumn();
-            $currstatus = (!in_array($status, ['Return to User', 'Rejected', 'Rejected by Officer', 'Closed'])) ? 'P' : 'N';   
+            $currstatus = (!in_array($status, ['Return to User', 'RejectedAll', 'Rejected by Admin', 'Rejected by Officer', 'Closed'])) ? 'P' : 'N';   
         } 
         else{
             header("Location: view-status.php?filter={$initialFilter}");
@@ -95,8 +95,9 @@
                             <div class="cstatus-select-content">
                                 <a href="#" data-status="All">All</a>
                                 <a href="#" data-status="Pending">Pending</a>
-                                <a href="#" data-status="Rejected">Rejected by Admin</a>
+                                <a href="#" data-status="Rejected by Admin">Rejected by Admin</a>
                                 <a href="#" data-status="Rejected by Officer">Rejected by Officer</a>
+                                <a href="#" data-status="RejectedAll">All Rejected</a>
                                 <a href="#" data-status="In Progress">In Progress</a>
                                 <a href="#" data-status="Return to User">Return to User</a>
                                 <a href="#" data-status="Closed">Closed</a>
@@ -105,7 +106,7 @@
                     </div>
                     <form action="" method="post" enctype="multipart/form-data" class="complaint-form">
                         <input type="hidden" id="currentFilter" name="currentFilter" value="<?php echo $initialFilter; ?>">
-
+<!-- Main table of complaints -->
                         <div class="clist-container">
                             <table class="clist-table">
                                 <thead>
@@ -120,10 +121,22 @@
                                 </thead>
                                 <tbody>
                                     <?php
-                                    
                                     $whereClause = " WHERE empcode = '$ecode'";
-                                    if($initialFilter !== 'All'){
-                                        $whereClause .= " AND status = '$initialFilter'";
+                                    switch ($initialFilter) {
+                                        case 'RejectedByAdmin':
+                                            $whereClause .= " AND status = 'Rejected by Admin'";
+                                            break;
+                                        case 'RejectedByOfficer':
+                                            $whereClause .= " AND status = 'Rejected by Officer'";
+                                            break;
+                                        case 'RejectedAll':
+                                            $whereClause .= " AND (status = 'Rejected by Admin' OR status = 'Rejected by Officer')";
+                                            break;
+                                        case 'All':
+                                            // No additional filter
+                                            break;
+                                        default:
+                                            $whereClause .= " AND status = '$initialFilter'";
                                     }
                                     $results = $dbo->query("SELECT compid, ctype, sub, status, empcode, offempcode, admempcode, curempcode FROM complaints{$whereClause}");
                                         if($results){ 
@@ -162,6 +175,7 @@
                                 </tbody>
                             </table>
                         </div>
+<!-- complaint details on click -->
                         <div class="cdetails" id="complaintDetails" style="display: <?php echo(isset($_GET['e']) ? 'block' : 'none'); ?>;">
                             <h2>Complaint Details</h2>
                             <input type="hidden" id="cccode" name="cccode" value="<?php echo htmlspecialchars($compid); ?>" />

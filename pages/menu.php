@@ -49,14 +49,20 @@
             </aside>
         <?php } 
         else if($catg === 'Officer'){ ?>
+            <?php
+                $currentView = $_GET['view'] ?? '';
+                $currentPage = basename($_SERVER['PHP_SELF']);
+            ?>
             <aside class="sidebar" id="sidebar">
                 <ul class="sidebar-menu">
-                    <li><a href="dashboard.php" class="sidebar-link <?= $current === 'dashboard.php' ? 'active' : '' ?>">Dashboard</a></li>
-                    <li><a href="officer-page.php" class="sidebar-link <?= $current === 'officer-page.php' ? 'active' : '' ?>">All Complaints</a></li>
-                    <li><a href="employee-page.php" class="sidebar-link <?= $current === 'employee-page.php' ? 'active' : '' ?>">New Complaint</a></li>
-                    <li><a href="logout.php" onclick="return confirm('Are you sure you want to logout?')" class="sidebar-link <?= $current === 'logout.php' ? 'active' : '' ?>">Logout</a></li>
+                    <li><a href="dashboard.php" class="sidebar-link <?= $currentPage === 'dashboard.php' ? 'active' : '' ?>">Dashboard</a></li>
+                    <li><a href="officer-page.php?view=my" class="sidebar-link <?= ($currentPage === 'officer-page.php' && $currentView === 'my') ? 'active' : '' ?>">My Complaints</a></li>
+                    <li><a href="officer-page.php?view=received" class="sidebar-link <?= ($currentPage === 'officer-page.php' && $currentView === 'received') ? 'active' : '' ?>">Received Complaints</a></li>
+                    <li><a href="employee-page.php" class="sidebar-link <?= $currentPage === 'employee-page.php' ? 'active' : '' ?>">New Complaint</a></li>
+                    <li><a href="logout.php" onclick="return confirm('Are you sure you want to logout?')" class="sidebar-link <?= $currentPage === 'logout.php' ? 'active' : '' ?>">Logout</a></li>
                 </ul>
             </aside>
+
         <?php } 
         else if($catg === 'Admin'){ ?>
             <aside class="sidebar" id="sidebar">

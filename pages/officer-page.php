@@ -2,8 +2,14 @@
     include_once '../include/config.php';
     session_start();
 
+    if(!isset($_SESSION['empcode'])){
+        header("Location: ../index.php"); 
+        exit();
+    }
+
     $ecode = $_SESSION['empcode'];
     $initialFilter = isset($_GET['filter']) ? htmlspecialchars($_GET['filter']) : 'All';
+    $viewMode = isset($_GET['view']) ? $_GET['view'] : 'received'; // 'received' or 'my'
 
     $ccode = '';
     $compid = '';
@@ -17,11 +23,6 @@
     $currec = '';
     $ccode = '';
     $curr = '';
-
-    if(!isset($_SESSION['empcode'])){
-        header("Location: ../index.php");
-        exit();
-    }
 
     if(isset($_POST['submitBtn'])){
         $oremarks = trim($_POST["oremarks"]);
@@ -119,7 +120,8 @@
             <?php include 'menu.php';?>
                 <main class="o-main">
                     <div class="cheading">
-                        <h2>List of all complaints</h2>
+                        <h2><?php echo $viewMode === 'my' ? 'My Complaints' : 'Received Complaints'; ?></h2>
+<!-- dropdown -->
                         <div class="cstatus-select">
                             <button class="dropbtn" id="statusFilterButton">All ▾</button>
                             <div class="cstatus-select-content">
@@ -132,9 +134,13 @@
                             </div>
                         </div>
                     </div>
+
                     <form action="" method="post" class="complaint-form">
                     <input type="hidden" name="originalFilter" id="currentFilter" value="<?php echo htmlspecialchars($initialFilter); ?>"/>   
                         <div class="clist-container">
+                            <?php
+                                
+                            ?>
                             <table class="clist-table">
                                 <thead>
                                     <tr>
@@ -149,29 +155,25 @@
                                 </thead>
                                 <tbody>
                                     <?php
-                                    $whereClause = " WHERE OFFEMPCODE='$ecode'";
-                                    if($initialFilter !== 'All'){
-                                        $whereClause .= " AND status = '$initialFilter'";
-                                    }
-                                        $results = $dbo->query("SELECT compid, ctype, sub, status, empcode, offempcode, admempcode, curempcode FROM complaints{$whereClause}");
+                                        if ($viewMode === 'my') {
+                                        $whereClause = "WHERE EMPCODE = '$ecode'";
+                                        } 
+                                        else{
+                                            $whereClause = "WHERE OFFEMPCODE = '$ecode' AND EMPCODE != '$ecode'";
+                                        }
+                                        if ($initialFilter !== 'All') {
+                                            $whereClause .= " AND STATUS = '$initialFilter'";
+                                        }
+                                        $results = $dbo->query("SELECT compid, ctype, sub, status, empcode, offempcode, admempcode, curempcode FROM complaints $whereClause");
                                         if($results){ 
                                             while ($row = $results->fetch(PDO::FETCH_ASSOC)){
                                                 $curecode = $row['curempcode'];
                                                 $cbycode = $row['empcode'];
                                                 $cname = ''; 
                                                 $cbyname = ''; 
-                                                if($curecode == $ecode){
-                                                    $cname = 'Me';
-                                                } 
-                                                else{
-                                                    $cname = $dbo->query("SELECT EMPNAME FROM user WHERE empcode = '$curecode'")->fetchColumn();
-                                                }
-                                                if($cbycode == $ecode){
-                                                        $cbyname = 'Me';
-                                                } 
-                                                else{
-                                                    $cbyname = $dbo->query("SELECT EMPNAME FROM user WHERE empcode = '$cbycode'")->fetchColumn();
-                                                }
+                                                $cname = ($curecode == $ecode) ? 'Me' : $dbo->query("SELECT EMPNAME FROM user WHERE EMPCODE = '$curecode'")->fetchColumn();
+                                                $cbyname = ($cbycode == $ecode) ? 'Me' : $dbo->query("SELECT EMPNAME FROM user WHERE EMPCODE = '$cbycode'")->fetchColumn();
+
                                                 echo "<tr>";
                                                 echo "<td>".htmlspecialchars($row['compid'])."</td>";
                                                 echo "<td>".htmlspecialchars($row['ctype'])."</td>";
@@ -179,7 +181,7 @@
                                                 echo "<td style='word-wrap: break-word; overflow-wrap: break-word; white-space: normal; max-width: 200px;'>" . htmlspecialchars($row['sub']) . "</td>";
                                                 echo "<td class='complaint-status'>".htmlspecialchars($row['status'])."</td>";
                                                 echo "<td>".htmlspecialchars($cname)."</td>";
-                                                echo "<td><a href='officer-page.php?e=".htmlspecialchars($row['compid'])."'>View Details</a></td>";
+                                                echo "<td><a href='officer-page.php?e=" . htmlspecialchars($row['compid']) . "&view=$viewMode'>View Details</a></td>";
                                                 echo "</tr>";
                                             }
                                         } 
@@ -189,6 +191,7 @@
                                 </tbody>
                             </table>
                         </div>
+<!-- complaint details on clicking -->
                 <div class="cdetails" id="complaintDetails" style="display: <?php echo(isset($_GET['e']) ? 'block' : 'none'); ?>;">
                     <h2>Complaint Details</h2>
                     <input type="hidden" id="cccode" name="cccode" value="<?php echo htmlspecialchars($compid); ?>" />
