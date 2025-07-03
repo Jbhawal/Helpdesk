@@ -121,26 +121,26 @@
                 <main class="o-main">
                     <div class="cheading">
                         <h2><?php echo $viewMode === 'my' ? 'My Complaints' : 'Received Complaints'; ?></h2>
+
 <!-- dropdown -->
                         <div class="cstatus-select">
                             <button class="dropbtn" id="statusFilterButton">All ▾</button>
                             <div class="cstatus-select-content">
                                 <a href="#" data-status="All">All</a>
                                 <a href="#" data-status="Pending">Pending</a>
+                                <a href="#" data-status="In Progress">In Progress</a>
                                 <a href="#" data-status="Rejected">Rejected by Admin</a>
-                                <a href="#" data-status="Rejected by Officer">Rejected by Officer</a>
+                                <a href="#" data-status="Rejected by Officer">Rejected by Me</a>
+                                <a href="#" data-status="RejectedAll">All Rejected</a>
                                 <a href="#" data-status="Return to User">Return to User</a>
                                 <a href="#" data-status="Closed">Closed</a>
                             </div>
                         </div>
                     </div>
-
+<!-- complaint list table -->
                     <form action="" method="post" class="complaint-form">
-                    <input type="hidden" name="originalFilter" id="currentFilter" value="<?php echo htmlspecialchars($initialFilter); ?>"/>   
+                        <input type="hidden" name="originalFilter" id="currentFilter" value="<?php echo htmlspecialchars($initialFilter); ?>"/>   
                         <div class="clist-container">
-                            <?php
-                                
-                            ?>
                             <table class="clist-table">
                                 <thead>
                                     <tr>
@@ -155,16 +155,24 @@
                                 </thead>
                                 <tbody>
                                     <?php
-                                        if ($viewMode === 'my') {
-                                        $whereClause = "WHERE EMPCODE = '$ecode'";
-                                        } 
-                                        else{
-                                            $whereClause = "WHERE OFFEMPCODE = '$ecode' AND EMPCODE != '$ecode'";
+                                        $whereClause = $viewMode === 'my' ? " WHERE empcode = '$ecode'" : " WHERE offempcode = '$ecode' AND empcode != '$ecode'";
+                                        switch ($initialFilter) {
+                                            case 'RejectedByAdmin':
+                                                $whereClause .= " AND status = 'Rejected by Admin'";
+                                                break;
+                                            case 'RejectedByOfficer':
+                                                $whereClause .= " AND status = 'Rejected by Officer'";
+                                                break;
+                                            case 'RejectedAll':
+                                                $whereClause .= " AND (status = 'Rejected by Admin' OR status = 'Rejected by Officer')";
+                                                break;
+                                            case 'All':
+                                                break;
+                                            default:
+                                                $whereClause .= " AND status = '$initialFilter'";
                                         }
-                                        if ($initialFilter !== 'All') {
-                                            $whereClause .= " AND STATUS = '$initialFilter'";
-                                        }
-                                        $results = $dbo->query("SELECT compid, ctype, sub, status, empcode, offempcode, admempcode, curempcode FROM complaints $whereClause");
+                                        $results = $dbo->query("SELECT compid, ctype, sub, status, empcode, offempcode, admempcode, curempcode FROM complaints{$whereClause}");
+                                    
                                         if($results){ 
                                             while ($row = $results->fetch(PDO::FETCH_ASSOC)){
                                                 $curecode = $row['curempcode'];
@@ -192,62 +200,60 @@
                             </table>
                         </div>
 <!-- complaint details on clicking -->
-                <div class="cdetails" id="complaintDetails" style="display: <?php echo(isset($_GET['e']) ? 'block' : 'none'); ?>;">
-                    <h2>Complaint Details</h2>
-                    <input type="hidden" id="cccode" name="cccode" value="<?php echo htmlspecialchars($compid); ?>" />
-                    <p><strong>Complaint ID:</strong> <?php echo htmlspecialchars($compid); ?></p>
-                    <p><strong>Type:</strong> <?php echo htmlspecialchars($ctype); ?></p>
-                    <p><strong>Subject:</strong> <?php echo htmlspecialchars($sub); ?></p>
-                    <p><strong>Description:</strong> <?php echo htmlspecialchars($descr); ?></p>
-                    <p><strong>File:</strong>
-                        <?php if(!empty($uploadedFile)): ?>
-                            <a href='<?php echo htmlspecialchars($uploadedFile); ?>' target="_blank" rel="noopener noreferrer">View Attached File</a>
-                        <?php else: ?>
-                            No file uploaded.
-                        <?php endif; ?>
-                    </p>
-                    <p><strong>Status:</strong> <?php echo htmlspecialchars($status); ?></p>
+                        <div class="cdetails" id="complaintDetails" style="display: <?php echo(isset($_GET['e']) ? 'block' : 'none'); ?>;">
+                            <h2>Complaint Details</h2>
+                            <input type="hidden" id="cccode" name="cccode" value="<?php echo htmlspecialchars($compid); ?>" />
+                            <p><strong>Complaint ID:</strong> <?php echo htmlspecialchars($compid); ?></p>
+                            <p><strong>Type:</strong> <?php echo htmlspecialchars($ctype); ?></p>
+                            <p><strong>Subject:</strong> <?php echo htmlspecialchars($sub); ?></p>
+                            <p><strong>Description:</strong> <?php echo htmlspecialchars($descr); ?></p>
+                            <p><strong>File:</strong>
+                                <?php if(!empty($uploadedFile)): ?>
+                                    <a href='<?php echo htmlspecialchars($uploadedFile); ?>' target="_blank" rel="noopener noreferrer">View Attached File</a>
+                                <?php else: ?>
+                                    No file uploaded.
+                                <?php endif; ?>
+                            </p>
+                            <p><strong>Status:</strong> <?php echo htmlspecialchars($status); ?></p>
 
-                    <?php if(($currec == $ecode && trim($currstatus) == 'P') || ($status === 'Return to User')){ ?>
-                        <div class="input-group">
-                            <label for="oremarks">Officer Remarks: </label>
-                            <input type="text" id="oremarks" name="oremarks" placeholder="Enter remarks" value="<?php echo htmlspecialchars($offrem); ?>" />
+                            <?php if(($currec == $ecode && trim($currstatus) == 'P') || ($status === 'Return to User')){ ?>
+                                <div class="input-group">
+                                    <label for="oremarks">Officer Remarks: </label>
+                                    <input type="text" id="oremarks" name="oremarks" placeholder="Enter remarks" value="<?php echo htmlspecialchars($offrem); ?>" />
+                                </div>
+
+                                <?php if(trim($status) === 'Return to User'){ ?>
+                                    <div class="input-group">
+                                        <label for="ostatus">Update Status</label>
+                                        <select id="ostatus" name="ostatus" required>
+                                            <option value="" disabled selected>Select status</option>
+                                            <option value="FA">Forward to Admin</option>
+                                        </select>
+                                    </div>
+                                <?php } 
+                                else{ ?>
+                                    <div class="input-group">
+                                        <label for="ostatus">Update Status</label>
+                                        <select id="ostatus" name="ostatus" required>
+                                            <option value="" disabled selected>Select status</option>
+                                            <option value="RJ">Rejected</option>
+                                            <option value="RU">Return to User</option>
+                                            <option value="FA">Forward to Admin</option>
+                                        </select>
+                                    </div>
+                                <?php } ?>
+
+                                <div class="submit-btn">
+                                    <button type="submit" name="submitBtn">
+                                        <span class="spinner" id="registerSpinner" style="display: none;"></span>
+                                        <span id="registerText">Submit</span>
+                                    </button>
+                                </div>
+                            <?php } 
+                            else{ ?>
+                                <p>Remarks can be found below.</p>
+                            <?php } ?>
                         </div>
-
-                        <?php if(trim($status) === 'Return to User'){ ?>
-                            <div class="input-group">
-                                <label for="ostatus">Update Status</label>
-                                <select id="ostatus" name="ostatus" required>
-                                    <option value="" disabled selected>Select status</option>
-                                    <option value="FA">Forward to Admin</option>
-                                </select>
-                            </div>
-                        <?php } 
-                        else{ ?>
-                            <div class="input-group">
-                                <label for="ostatus">Update Status</label>
-                                <select id="ostatus" name="ostatus" required>
-                                    <option value="" disabled selected>Select status</option>
-                                    <option value="RJ">Rejected</option>
-                                    <option value="RU">Return to User</option>
-                                    <option value="FA">Forward to Admin</option>
-                                </select>
-                            </div>
-                        <?php } ?>
-
-                        <div class="submit-btn">
-                            <button type="submit" name="submitBtn">
-                                <span class="spinner" id="registerSpinner" style="display: none;"></span>
-                                <span id="registerText">Submit</span>
-                            </button>
-                                <!-- Submit</button> -->
-                        </div>
-                    <?php } 
-                    else{ ?>
-                        <p>Remarks can be found below.</p>
-                    <?php } ?>
-                    </div>
-
 <!-- remarks history table -->
                         <div class="clist-container">
                             <table class="clist-table">
@@ -283,9 +289,9 @@
                                 </tbody>
                             </table>
                         </div>
-            </form>
-        </main>
-        </div>
+                    </form>
+                </main>
+            </div>
         </div>
         <div id="overlay" class="overlay"></div>
         <script src="../js/script.js"></script>

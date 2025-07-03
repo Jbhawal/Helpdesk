@@ -44,6 +44,7 @@ It is ideal for institutions, departments, or workplaces aiming to reduce paperw
 ## 📌 Features
 
 - 🔐 **Authentication**: User login with secure sessions.
+- 🧾 **Dashboard**: User dashboard for a summarised view of complaint data.
 - 📝 **Complaint Filing**: Users can lodge new complaints with subject and description.
 - 📤 **Forwarding Workflow**: Officers/Admins can return complaints for clarification or forward them to the next level.
 - 💬 **Remarks System**: Users can view past and add further remarks when they work on the complaints or are returned to them.
@@ -84,12 +85,12 @@ helpdesk/                    #root folder
 ├── pages/                   # Core application pages grouped by functionality
 │   ├── admin-page.php       
 │   ├── dashboard.php   
+│   ├── employee-menu.php    
 │   ├── employee-page.php    
 │   ├── logout.php           
 │   ├── menu.php             
 │   ├── officer-page.php     
-│   ├── register.php         
-│   ├── report.php           
+│   ├── register.php           
 │   └── view-status.php
 │
 ├── uploads/                 # Stored complaint file attachments
@@ -141,7 +142,9 @@ helpdesk/                    #root folder
 
 ---
 
-## 📸 Screenshots 
+## 🤝 Contribution
 
-- will be uploaded shortly
+If you'd like to contribute to this project, feel free to submit issues or open pull requests.  
+All kinds of contributions — from code improvements and bug fixes to documentation enhancements are welcome!
+
 ---

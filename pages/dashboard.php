@@ -88,23 +88,23 @@
                                 <h2>Total Lodged</h2>
                                 <p><?php echo $totalLodge ?></p>
                             </div>
-                            <div class="card" onclick="window.location.href='officer-page.php?&filter=Pending'">
+                            <div class="card" onclick="window.location.href='officer-page.php?view=my&filter=Pending'">
                                 <h2>Current Pending</h2>
                                 <p><?php echo $pending ?></p>
                             </div>
-                            <div class="card" onclick="window.location.href='officer-page.php?&filter=All'">
+                            <div class="card" onclick="window.location.href='officer-page.php?view=my&filter=In+Progress'">
                                 <h2>In Progress</h2>
                                 <p><?php echo $inProgress ?></p>
                             </div>
-                            <div class="card" onclick="window.location.href='officer-page.php?&filter=All'">
+                            <div class="card" onclick="window.location.href='officer-page.php?view=my&filter=Return+to+User'">
                                 <h2>Returned Back</h2>
                                 <p><?php echo $returned ?></p>
                             </div>
-                            <div class="card" onclick="window.location.href='officer-page.php?&filter=All'">
+                            <div class="card" onclick="window.location.href='officer-page.php?view=my&filter=Closed'">
                                 <h2>Closed</h2>
                                 <p><?php echo $closed ?></p>
                             </div>
-                            <div class="card" onclick="window.location.href='officer-page.php?&filter=All'">
+                            <div class="card" onclick="window.location.href='officer-page.php?view=my&filter=RejectedAll'">
                                 <h2>Rejected</h2>
                                 <p><?php echo $rejected ?></p>
                             </div>
@@ -117,15 +117,15 @@
                                 <h2>Total Received</h2>
                                 <p><?php echo $totalORcv ?></p>
                             </div>
-                            <div class="card" onclick="window.location.href='officer-page.php?&filter=All'">
+                            <div class="card" onclick="window.location.href='officer-page.php?view=received&filter=Pending'">
                                 <h2>Current Pending</h2>
                                 <p><?php echo $pendingbyO ?></p>
                             </div>
-                            <div class="card" onclick="window.location.href='officer-page.php?&filter=All'">
+                            <div class="card" onclick="window.location.href='officer-page.php?view=received&filter=Return+to+User'">
                                 <h2>Returned Back</h2>
                                 <p><?php echo $returnedbyO ?></p>
                             </div>
-                            <div class="card" onclick="window.location.href='officer-page.php?&filter=All'">
+                            <div class="card" onclick="window.location.href='officer-page.php?view=received&filter=RejectedAll'">
                                 <h2>Rejected</h2>
                                 <p><?php echo $rejectedbyO ?></p>
                             </div>

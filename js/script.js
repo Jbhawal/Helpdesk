@@ -11,31 +11,50 @@ document.addEventListener('DOMContentLoaded', function(){
         return urlParams.get(name);
     }
 
-    // Redirect to filtered URL
+  // --- Dropdown Button Functionality (for opening/closing the dropdown) ---
+    if(statusFilterButton){
+        // Toggle dropdown visibility on button click
+        statusFilterButton.addEventListener('click', function(){
+            dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
+        });
+
+        // Set button text to the current filter on page load
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentFilter = urlParams.get('filter');
+        if(currentFilter){
+            statusFilterButton.textContent = currentFilter + ' ▾';
+        } 
+        else{
+            // Default text if no filter is applied (All)
+            const allLink = Array.from(statusLinks).find(link => link.dataset.status === 'All');
+            if(allLink){
+                statusFilterButton.textContent = allLink.textContent + ' ▾';
+            }
+        }
+    }
+
+    // Event Listener for Status Filter Links
     statusLinks.forEach(link => {
         link.addEventListener('click', function(event){
-            event.preventDefault();
-            const selectedStatusValue = this.dataset.status;
-
-            dropdownContent.style.display = 'none';
-
-            const url = new URL(window.location.origin + window.location.pathname);
+            event.preventDefault(); // Stop the default link behavior
+            const selectedStatusValue = this.dataset.status; // Get the chosen status (e.g., "Pending")
+            dropdownContent.style.display = 'none'; // Hide the dropdown menu
+            const url = new URL(window.location.href); // Get the current page's full URL.
+            const currentViewParam = url.searchParams.get('view'); // Extract the 'view' param from the current URL
+            url.searchParams.set('view', currentViewParam || 'all'); // Set 'view' in the new URL. If `currentViewParam` is null (no view set), it defaults to 'all'.
             url.searchParams.set('filter', selectedStatusValue);
-            url.searchParams.delete('e');  // remove complaint ID if changing filter
+            url.searchParams.delete('e'); 
+            // Redirect the browser to the newly constructed URL
             window.location.href = url.toString();
         });
     });
 
-    // Toggle dropdown visibility
-    statusFilterButton.addEventListener('click', function(event){
-        event.stopPropagation();
-        dropdownContent.classList.toggle('show');
-    });
-
-    // Close dropdown on click outside
-    document.addEventListener('click', function(e){
-        if (!statusFilterButton.contains(e.target) && !dropdownContent.contains(e.target)) {
-            dropdownContent.classList.remove('show');
+    // Close Dropdown if clicked outside
+    window.addEventListener('click', function(event){
+        if(statusFilterButton && dropdownContent){
+            if(!event.target.matches('.dropbtn') && !event.target.closest('.cstatus-select-content')){
+                dropdownContent.style.display = 'none';
+            }
         }
     });
 
@@ -43,12 +62,12 @@ document.addEventListener('DOMContentLoaded', function(){
     const initialFilterFromURL = getQueryParam('filter') || 'All';
     let displayFilterText = initialFilterFromURL;
 
-    if (initialFilterFromURL === 'Rejected by Officer') {
+    if(initialFilterFromURL === 'Rejected by Officer'){
         displayFilterText = 'Rejected';
     }
 
     statusLinks.forEach(link => {
-        if (link.dataset.status === initialFilterFromURL || (initialFilterFromURL === 'Rejected by Officer' && link.dataset.status === 'Rejected')) {
+        if(link.dataset.status === initialFilterFromURL || (initialFilterFromURL === 'Rejected by Officer' && link.dataset.status === 'Rejected')){
             displayFilterText = link.textContent;
         }
     });
@@ -62,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function(){
     if(initialDetailsDisplay && complaintDetailsDiv){
         complaintDetailsDiv.style.display = "block";
         complaintDetailsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } else if(complaintDetailsDiv) {
+    } else if(complaintDetailsDiv){
         complaintDetailsDiv.style.display = 'none';
     }
 
@@ -94,13 +113,13 @@ document.addEventListener('DOMContentLoaded', function(){
 });
 
 //Buffering
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function(){
     const loadingOverlay = document.getElementById('universalLoadingOverlay');
 
-    if (loadingOverlay) {
+    if(loadingOverlay){
         const allForms = document.querySelectorAll('form');
         allForms.forEach(form => {
-            form.addEventListener('submit', function(event) {
+            form.addEventListener('submit', function(event){
                 loadingOverlay.classList.add('show');
                 
                 // Disable all submit buttons in the form to prevent double-clicks
