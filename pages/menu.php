@@ -50,7 +50,7 @@
         <?php } 
         else if($catg === 'Officer'){ ?>
             <?php
-                $currentView = $_GET['view'] ?? '';
+                $currentView = isset($_GET['view']) ? $_GET['view'] : '';
                 $currentPage = basename($_SERVER['PHP_SELF']);
             ?>
             <aside class="sidebar" id="sidebar">
